@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+
+    <!-- Settings title for action bar-->
+    <string name="settings">Settings</string>
+</resources>
