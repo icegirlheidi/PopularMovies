@@ -1,22 +1,37 @@
 package com.example.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
-import android.media.audiofx.BassBoost;
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import java.util.List;
 
-public class MoviesActivity extends AppCompatActivity {
+public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>> {
+
+    private static final String LOG_TAG = MoviesActivity.class.getName();
+
+    private static final int LOADER_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
 
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            // Initialize the loader if there is internet connection
+            getLoaderManager().initLoader(LOADER_ID, null, this);
+        }
     }
 
     @Override
@@ -35,5 +50,21 @@ public class MoviesActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
+        return new MoviesLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> data) {
+        Movies movie0 = data.get(0);
+        Log.i(LOG_TAG, movie0.getmOriginalTitle() + "_" + movie0.getmBackdropPath());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Movies>> loader) {
+
     }
 }
