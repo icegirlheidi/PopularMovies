@@ -3,18 +3,18 @@ package com.example.android.popularmovies;
 public class Movies {
 
     private String mOriginalTitle;
-    private String mBackdropPath;
+    private String mPosterPath;
 
-    public Movies(String originalTitle, String backdropPath) {
+    public Movies(String originalTitle, String posterPath) {
         this.mOriginalTitle = originalTitle;
-        this.mBackdropPath = backdropPath;
+        this.mPosterPath = posterPath;
     }
 
-    public String getmOriginalTitle() {
+    public String getOriginalTitle() {
         return mOriginalTitle;
     }
 
-    public String getmBackdropPath() {
-        return mBackdropPath;
+    public String getPosterPath(){
+        return mPosterPath;
     }
 }

@@ -8,10 +8,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>> {
@@ -20,10 +23,22 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     private static final int LOADER_ID = 1;
 
+    private RecyclerView mRecyclerView;
+
+    private MoviesAdapter mMoviesAdapter;
+
+    // Number of columns used in GridLayoutManager
+//    private final int SPAN_COUNT = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
+        int spanCount = calculateNoOfColumns(this);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+        mRecyclerView.setAdapter(new MoviesAdapter(this, new ArrayList<Movies>()));
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -58,13 +73,23 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> data) {
-        Movies movie0 = data.get(0);
-        Log.i(LOG_TAG, movie0.getmOriginalTitle() + "_" + movie0.getmBackdropPath());
+    public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> moviesList) {
+        mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
+        if (moviesList != null && !(moviesList.isEmpty())) {
+            mMoviesAdapter = new MoviesAdapter(this, moviesList);
+            mRecyclerView.setAdapter(mMoviesAdapter);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<List<Movies>> loader) {
+        mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
+    }
 
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
     }
 }

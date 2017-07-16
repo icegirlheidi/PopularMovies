@@ -41,7 +41,7 @@ public class QueryUtils {
 
     private static final String JSON_PARSE_ORIGINAL_TITLE = "original_title";
 
-    private static final String JSON_PARSE_BACKDROP_PATH = "backdrop_path";
+    private static final String JSON_PARSE_POSTER_PATH = "poster_path";
 
     public static List<Movies> fetchMoviesData() {
         URL url = buildUrl();
@@ -127,9 +127,9 @@ public class QueryUtils {
             for (int i = 0; i < results.length(); i++) {
                 JSONObject currentMovie = results.getJSONObject(i);
                 String originalTitle = currentMovie.getString(JSON_PARSE_ORIGINAL_TITLE);
-                String backdropPath = currentMovie.getString(JSON_PARSE_BACKDROP_PATH);
+                String posterPath = IMAGE_BASE_URL + currentMovie.getString(JSON_PARSE_POSTER_PATH);
 
-                moviesList.add(new Movies(originalTitle, backdropPath));
+                moviesList.add(new Movies(originalTitle, posterPath));
             }
         } catch (JSONException e) {
             e.printStackTrace();
