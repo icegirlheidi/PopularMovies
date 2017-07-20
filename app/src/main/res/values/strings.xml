@@ -3,4 +3,16 @@
 
     <!-- Settings title for action bar-->
     <string name="settings">Settings</string>
+
+    <!-- Details title for action bar-->
+    <string name="details">Details</string>
+
+    <!-- Title of current movie used in bundle in MoviesAdapter  -->
+    <string name="current_movie">currentMovie</string>
+
+    <!-- Title of movie list used in intent  -->
+    <string name="movie_list">movieList</string>
+
+    <!-- Title of id used in intent-->
+    <string name="id">id</string>
 </resources>

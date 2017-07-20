@@ -4,6 +4,7 @@ package com.example.android.popularmovies.utilities;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.Movies;
 
 import org.json.JSONArray;
@@ -22,53 +23,28 @@ import java.util.List;
 
 public class QueryUtils {
 
-    private static final String TAG = QueryUtils.class.getName();
+    private static final String LOG_TAG = QueryUtils.class.getName();
 
-    private static final String BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-
-    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
-
-    private static final String SORT_BY_PARAM = "sort_by";
-
-    private static final String API_KEY_PARAM = "api_key";
-
-    private static final String popularity = "popularity.desc";
-
-    // Replace this with your own API key
-    private static final String api_key = "";
-
-    private static final String JSON_PARSE_RESULTS = "results";
-
-    private static final String JSON_PARSE_ORIGINAL_TITLE = "original_title";
-
-    private static final String JSON_PARSE_POSTER_PATH = "poster_path";
-
-    public static List<Movies> fetchMoviesData() {
-        URL url = buildUrl();
+    public static String fetchMovieJson(String requestUrl) {
+        URL url = createUrl(requestUrl);
         String jsonResponse = "";
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        List<Movies> listMovies = extractFeatureFromJSON(jsonResponse);
-        return listMovies;
+        return jsonResponse;
     }
 
-    public static URL buildUrl() {
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                .appendQueryParameter(SORT_BY_PARAM, popularity)
-                .appendQueryParameter(API_KEY_PARAM, api_key).build();
+    private static URL createUrl(String stringUrl) {
         URL url = null;
         try {
-            url = new URL(builtUri.toString());
+            url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Error with creating url", e);
         }
-        Log.i(TAG, "The built URL is: " + url);
         return url;
     }
-
 
     private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
@@ -107,7 +83,7 @@ public class QueryUtils {
 
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
-        if(inputStream != null) {
+        if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
@@ -117,23 +93,5 @@ public class QueryUtils {
             }
         }
         return output.toString();
-    }
-
-    private static List<Movies> extractFeatureFromJSON(String moviesJSON) {
-        List<Movies> moviesList = new ArrayList<>();
-        try {
-            JSONObject jsonObject = new JSONObject(moviesJSON);
-            JSONArray results = jsonObject.getJSONArray(JSON_PARSE_RESULTS);
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject currentMovie = results.getJSONObject(i);
-                String originalTitle = currentMovie.getString(JSON_PARSE_ORIGINAL_TITLE);
-                String posterPath = IMAGE_BASE_URL + currentMovie.getString(JSON_PARSE_POSTER_PATH);
-
-                moviesList.add(new Movies(originalTitle, posterPath));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return moviesList;
     }
 }

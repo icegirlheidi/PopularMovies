@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:padding="5dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark">
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -11,14 +12,15 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="4dp"
+        android:background="@color/colorPrimary">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/poster_image_view"
                 android:layout_width="match_parent"
-                android:layout_height="245dp"
+                android:layout_height="255dp"
                 android:scaleType="centerCrop"
                 android:gravity="center"/>
 
@@ -31,9 +33,13 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:minLines="2"
+                android:padding="8dp"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif" />
+                android:textSize="16sp"
+                android:fontFamily="sans-serif"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/textLight"/>
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

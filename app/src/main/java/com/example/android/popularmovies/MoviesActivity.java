@@ -6,14 +6,18 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +30,6 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     private RecyclerView mRecyclerView;
 
     private MoviesAdapter mMoviesAdapter;
-
-    // Number of columns used in GridLayoutManager
-//    private final int SPAN_COUNT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,15 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
-        return new MoviesLoader(this);
+
+        Uri baseUri = Uri.parse(Constants.BASE_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        // Build uri, for example:
+        // "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=[your api key here]"
+        uriBuilder.appendQueryParameter(Constants.SORT_BY_PARAM, Constants.popularity)
+                .appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        // Initialize MoviesLoader
+        return new MoviesLoader(this, uriBuilder.toString());
     }
 
     @Override
@@ -86,6 +95,12 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
     }
 
+    /**
+     * Adjust number of columns of posters based on screen width
+     *
+     * @param context the context
+     * @return the number of columns
+     */
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
