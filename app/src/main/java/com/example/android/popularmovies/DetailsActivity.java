@@ -74,7 +74,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse(Constants.SINGLE_MOVIE_BASE_URL + mMovieId);
+        Uri baseUri = Uri.parse(Constants.BASE_URL + mMovieId);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
         uriBuilder.appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();

@@ -58,12 +58,14 @@ public class DetailsLoader extends AsyncTaskLoader<List<Movies>> {
                 String genresName = currentGenres.getString(Constants.JSON_PARSE_NAME);
                 genresList.add(genresName);
             }
+            double voteAverage = jsonObject.getDouble(Constants.JSON_PARSE_VOTE_AVERAGE);
 
             Movies movie = new Movies(originalTitle, posterPath);
             movie.setBackdropPath(backdropPath);
             movie.setOverview(overView);
             movie.setReleaseDate(releaseDate);
             movie.setGenres(genresList);
+            movie.setVoteRate(voteAverage);
             moviesList.add(movie);
         } catch (JSONException e) {
             e.printStackTrace();

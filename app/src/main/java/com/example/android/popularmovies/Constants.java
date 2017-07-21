@@ -6,17 +6,22 @@ public class Constants {
     public static final String api_key = "";
 
     // Base url for fetching movies data through The Movie Database API
-    public static final String BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-
-    // Base url for fetching a single movie data through The Movie Database API
-    public static final String SINGLE_MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
+    public static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
     // Base url for fetching image data through The Movie Database API
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
 
+    // Value of large image size
     public static final String IMAGE_SIZE_LARGE = "w185/";
 
+    // Value of extra large image size
     public static final String IMAGE_SIZE_EXTRA_LARGE = "w342/";
+
+    // Value of top rated used to construct url
+    public static final String TOP_RATED_PARAM = "top_rated";
+
+    // Value of top popular used to construct url
+    public static final String POPULARITY_PARAM = "popular";
 
     // Query parameter sort_by
     public static final String SORT_BY_PARAM = "sort_by";
@@ -54,6 +59,9 @@ public class Constants {
     // Title of name from json file
     public static final String JSON_PARSE_NAME = "name";
 
+    // Title of vote average from json file
+    public static final String JSON_PARSE_VOTE_AVERAGE = "vote_average";
+
     // Title of belong to collection from json file
     public static final String JSON_PARSE_BELONGS_TO_COLLECTION = "belongs_to_collection";
 
@@ -62,6 +70,5 @@ public class Constants {
 
     // Genres separator for data such as Action | Adventure | Fantasy
     public static final String GENRES_SEPARATOR = " | ";
-
 
 }

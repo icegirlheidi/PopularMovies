@@ -14,6 +14,7 @@ public class Movies implements Parcelable {
     private String mReleaseDate;
     private int mId;
     private List<String> mGenres;
+    private double mVoteAverage;
 
     public Movies(String originalTitle, String posterPath) {
         this.mOriginalTitle = originalTitle;
@@ -61,6 +62,10 @@ public class Movies implements Parcelable {
         this.mReleaseDate = releaseDate;
     }
 
+    public void setVoteRate(double voteAverage) {
+        this.mVoteAverage = voteAverage;
+    }
+
     public void setId(int id) {
         this.mId = id;
     }
@@ -95,6 +100,10 @@ public class Movies implements Parcelable {
 
     public List<String> getGenres() {
         return mGenres;
+    }
+
+    public double getVoteAverage() {
+        return mVoteAverage;
     }
 
     @Override

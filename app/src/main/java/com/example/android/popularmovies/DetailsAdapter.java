@@ -73,6 +73,10 @@ public class DetailsAdapter extends ArrayAdapter<Movies> {
         String genresString = TextUtils.join(Constants.GENRES_SEPARATOR, genresList);
         genresTextView.setText(genresString);
 
+        TextView voteAverageTextView = (TextView) convertView.findViewById(R.id.vote_average_in_details);
+        double voteAverage = currentMovie.getVoteAverage();
+        voteAverageTextView.setText(String.valueOf(voteAverage));
+
         TextView overviewTextView = (TextView) convertView.findViewById(R.id.overview_in_details);
         String overview = currentMovie.getOverview();
         overviewTextView.setText(overview);

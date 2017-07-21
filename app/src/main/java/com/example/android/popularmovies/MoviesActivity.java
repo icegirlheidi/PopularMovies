@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -21,7 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>> {
+public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MoviesActivity.class.getName();
 
@@ -30,6 +32,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     private RecyclerView mRecyclerView;
 
     private MoviesAdapter mMoviesAdapter;
+
+    private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,27 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
             // Initialize the loader if there is internet connection
             getLoaderManager().initLoader(LOADER_ID, null, this);
         }
+
+        /*
+         * Register MoviesActivity as an OnPreferenceChangedListener to receive a callback when a
+         * SharedPreference has changed.
+         */
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // If the preferences for order by has changed, make another query and set the flag to false.
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
+        PREFERENCES_HAVE_BEEN_CHANGED = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /* Unregister MoviesActivity as an OnPreferenceChangedListener to avoid any memory leaks. */
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -71,12 +96,14 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
 
-        Uri baseUri = Uri.parse(Constants.BASE_URL);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
+
+        Uri baseUri = Uri.parse(Constants.BASE_URL + orderBy);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example:
-        // "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=[your api key here]"
-        uriBuilder.appendQueryParameter(Constants.SORT_BY_PARAM, Constants.popularity)
-                .appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        // "http://api.themoviedb.org/3/movie/popular?api_key=[your api key here]"
+        uriBuilder.appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
         // Initialize MoviesLoader
         return new MoviesLoader(this, uriBuilder.toString());
     }
@@ -93,6 +120,11 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<List<Movies>> loader) {
         mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        PREFERENCES_HAVE_BEEN_CHANGED = true;
     }
 
     /**

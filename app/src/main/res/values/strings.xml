@@ -15,4 +15,12 @@
 
     <!-- Title of id used in intent-->
     <string name="id">id</string>
+
+    <string name="pref_order_by_label">Order by</string>
+    <string name="pref_order_by_key">order_by</string>
+    <string name="pref_order_by_popularity_label">Popularity</string>
+    <string name="pref_order_by_top_related_label">Top rated</string>
+
+    <string name="pref_order_by_popularity_value" translatable="false">popular</string>
+    <string name="pref_order_by_top_related_value" translatable="false">top_rated</string>
 </resources>

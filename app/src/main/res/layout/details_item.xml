@@ -37,6 +37,18 @@
         android:textSize="14sp"
         tools:text="Action | Adventure | Science Fiction" />
 
+    <TextView
+        android:id="@+id/vote_average_in_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="18sp"
+        android:textColor="@color/textLight"
+        android:drawableLeft="@drawable/ic_star_rate_white_18dp"
+        android:drawablePadding="2dp"
+        tools:text="7.8"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,6 +61,7 @@
             android:layout_margin="16dp"
             android:textColor="@color/textPrimary"
             android:textSize="18sp"
+            android:lineSpacingMultiplier="1.2"
             tools:text="A live-action adaptation of Disney's version of the classic 'Beauty and the Beast' tale of a cursed prince and a beautiful young woman who helps him break the spell." />
 
     </LinearLayout>
