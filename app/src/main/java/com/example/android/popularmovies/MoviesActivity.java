@@ -17,6 +17,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +37,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
+    private TextView mEmptyTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +49,21 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
         mRecyclerView.setAdapter(new MoviesAdapter(this, new ArrayList<Movies>()));
 
+        mEmptyTextView = (TextView) findViewById(R.id.empty_text_view);
+
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
             // Initialize the loader if there is internet connection
             getLoaderManager().initLoader(LOADER_ID, null, this);
+        } else {
+            // When there is no internet connection,
+            // Remove the loading progress bar and display no internet connection
+            View loadingProgress = findViewById(R.id.loading_progress);
+            loadingProgress.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(R.string.no_intenet);
         }
 
         /*
@@ -99,12 +112,12 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
-        Uri baseUri = Uri.parse(Constants.BASE_URL + orderBy);
+        Uri baseUri = Uri.parse(Constants.BASE_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example:
         // "http://api.themoviedb.org/3/movie/popular?api_key=[your api key here]"
-        uriBuilder.appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
-        // Initialize MoviesLoader
+        Uri uri = uriBuilder.appendPath(orderBy).appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        // Initialize MoviesLoadery
         return new MoviesLoader(this, uriBuilder.toString());
     }
 
@@ -114,7 +127,12 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         if (moviesList != null && !(moviesList.isEmpty())) {
             mMoviesAdapter = new MoviesAdapter(this, moviesList);
             mRecyclerView.setAdapter(mMoviesAdapter);
+        } else {
+            mEmptyTextView.setText(R.string.no_movies);
         }
+        View loadingProgress = findViewById(R.id.loading_progress);
+        // Remove loading progress bar after making http request and updating ui
+        loadingProgress.setVisibility(View.GONE);
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,6 +39,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     // Loader id used to initialized DetailsLoader
     private static final int LOADER_ID = 5;
 
+    private TextView mEmptyTextView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,12 +55,21 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
         mList.setAdapter(mDetailsAdapter);
 
+        mEmptyTextView =(TextView) findViewById(R.id.empty_text_view_details);
+
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
             // Initialize the loader if there is internet connection
             getLoaderManager().initLoader(LOADER_ID, null, this);
+        } else {
+            // When there is no internet connection,
+            // Remove the loading progress bar and display no internet connection
+            View loadingProgress = findViewById(R.id.loading_progress_details);
+            loadingProgress.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(R.string.no_intenet);
         }
     }
 
@@ -74,10 +86,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse(Constants.BASE_URL + mMovieId);
+        Uri baseUri = Uri.parse(Constants.BASE_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
-        uriBuilder.appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        uriBuilder.appendPath(String.valueOf(mMovieId)).appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
         return new DetailsLoader(this, uriBuilder.toString());
     }
 
@@ -87,7 +99,12 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         if (moviesList != null && !(moviesList.isEmpty())) {
             mDetailsAdapter = new DetailsAdapter(this, moviesList);
             mList.setAdapter(mDetailsAdapter);
+        } else {
+            mEmptyTextView.setText(R.string.no_details);
         }
+        View loadingProgress = findViewById(R.id.loading_progress_details);
+        // Remove loading progress bar after making http request and updating ui
+        loadingProgress.setVisibility(View.GONE);
     }
 
     @Override

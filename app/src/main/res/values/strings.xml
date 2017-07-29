@@ -23,4 +23,14 @@
 
     <string name="pref_order_by_popularity_value" translatable="false">popular</string>
     <string name="pref_order_by_top_related_value" translatable="false">top_rated</string>
+
+    <!-- Title for empty textview when there is no internet -->
+    <string name="no_intenet">No internet connection</string>
+
+    <!-- Title for empty textview when there is no movie available -->
+    <string name="no_movies">No movies found</string>
+
+    <!-- Title for empty textview when there is no movie details available -->
+    <string name="no_details">No movies details available</string>
+
 </resources>
