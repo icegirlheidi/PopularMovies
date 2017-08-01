@@ -2,7 +2,6 @@ package com.example.android.popularmovies;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
 
 import com.example.android.popularmovies.utilities.QueryUtils;
 
@@ -10,13 +9,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
 
-    private String mUrl;
+    private final String mUrl;
 
     public MoviesLoader(Context context, String url) {
         super(context);
@@ -36,8 +34,7 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
         // Fetch the json file
         String jsonResponse = QueryUtils.fetchMovieJson(mUrl);
         // Extract usable info from json file
-        List<Movies> movies = extractFeatureFromJSON(jsonResponse);
-        return movies;
+        return extractFeatureFromJSON(jsonResponse);
     }
 
     /**

@@ -17,20 +17,8 @@ public class Constants {
     // Value of extra large image size
     public static final String IMAGE_SIZE_EXTRA_LARGE = "w342/";
 
-    // Value of top rated used to construct url
-    public static final String TOP_RATED_PARAM = "top_rated";
-
-    // Value of top popular used to construct url
-    public static final String POPULARITY_PARAM = "popular";
-
-    // Query parameter sort_by
-    public static final String SORT_BY_PARAM = "sort_by";
-
     // Query parameter api_key
     public static final String API_KEY_PARAM = "api_key";
-
-    // Value of popularity used by query parameter sort_by
-    public static final String popularity = "popularity.desc";
 
     // Title of results from json file
     public static final String JSON_PARSE_RESULTS = "results";
@@ -61,9 +49,6 @@ public class Constants {
 
     // Title of vote average from json file
     public static final String JSON_PARSE_VOTE_AVERAGE = "vote_average";
-
-    // Title of belong to collection from json file
-    public static final String JSON_PARSE_BELONGS_TO_COLLECTION = "belongs_to_collection";
 
     // Date separator for data such as "2017-6-29"
     public static final String DATE_SEPARATOR = "-";

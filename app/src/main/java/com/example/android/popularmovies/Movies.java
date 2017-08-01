@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Movies implements Parcelable {
 
-    private String mOriginalTitle;
-    private String mPosterPath;
+    private final String mOriginalTitle;
+    private final String mPosterPath;
     private String mBackdropPath;
     private String mOverview;
     private String mReleaseDate;
@@ -41,14 +41,6 @@ public class Movies implements Parcelable {
             return new Movies[size];
         }
     };
-
-    public void setOriginalTitle(String originalTitle) {
-        this.mOriginalTitle = originalTitle;
-    }
-
-    public void setPosterPath(String posterPath) {
-        this.mPosterPath = posterPath;
-    }
 
     public void setBackdropPath(String backdropPath) {
         this.mBackdropPath = backdropPath;

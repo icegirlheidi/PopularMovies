@@ -8,26 +8,22 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final String LOG_TAG = MoviesActivity.class.getName();
 
     private static final int LOADER_ID = 1;
 
@@ -43,10 +39,13 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
+
+        // Number of columns to show movie posters
         int spanCount = calculateNoOfColumns(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(new MoviesAdapter(this, new ArrayList<Movies>()));
 
         mEmptyTextView = (TextView) findViewById(R.id.empty_text_view);
@@ -66,6 +65,12 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
             mEmptyTextView.setText(R.string.no_intenet);
         }
 
+        // Scroll to lastly visible movie if there is saved instance state
+        if (savedInstanceState != null) {
+            Parcelable state = savedInstanceState.getParcelable(getString(R.string.view_state));
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(state);
+        }
+
         /*
          * Register MoviesActivity as an OnPreferenceChangedListener to receive a callback when a
          * SharedPreference has changed.
@@ -76,9 +81,26 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onStart() {
         super.onStart();
-        // If the preferences for order by has changed, make another query and set the flag to false.
-        getLoaderManager().restartLoader(LOADER_ID, null, this);
-        PREFERENCES_HAVE_BEEN_CHANGED = false;
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        // If there is no internet, do not restart loader even if user changes preference in settings
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            // If the preferences for order by has changed, make another query and set the flag to false.
+            if (PREFERENCES_HAVE_BEEN_CHANGED) {
+                getLoaderManager().restartLoader(LOADER_ID, null, this);
+                mEmptyTextView.setVisibility(View.INVISIBLE);
+                PREFERENCES_HAVE_BEEN_CHANGED = false;
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(
+                getString(R.string.view_state),
+                mRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
@@ -117,8 +139,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         // Build uri, for example:
         // "http://api.themoviedb.org/3/movie/popular?api_key=[your api key here]"
         Uri uri = uriBuilder.appendPath(orderBy).appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
-        // Initialize MoviesLoadery
-        return new MoviesLoader(this, uriBuilder.toString());
+        // Initialize MoviesLoader
+        return new MoviesLoader(this, uri.toString());
     }
 
     @Override
@@ -151,10 +173,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
      * @param context the context
      * @return the number of columns
      */
-    public static int calculateNoOfColumns(Context context) {
+    private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int noOfColumns = (int) (dpWidth / 180);
-        return noOfColumns;
+        return (int) (dpWidth / 180);
     }
 }

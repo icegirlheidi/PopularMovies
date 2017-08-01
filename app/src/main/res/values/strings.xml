@@ -7,21 +7,25 @@
     <!-- Details title for action bar-->
     <string name="details">Details</string>
 
-    <!-- Title of current movie used in bundle in MoviesAdapter  -->
-    <string name="current_movie">currentMovie</string>
-
-    <!-- Title of movie list used in intent  -->
-    <string name="movie_list">movieList</string>
-
     <!-- Title of id used in intent-->
     <string name="id">id</string>
 
+    <!--Title of order by in settings-->
     <string name="pref_order_by_label">Order by</string>
-    <string name="pref_order_by_key">order_by</string>
+
+    <!--Preference key of order by-->
+    <string name="pref_order_by_key" translatable="false">order_by</string>
+
+    <!--Title of popularity in settings-->
     <string name="pref_order_by_popularity_label">Popularity</string>
+
+    <!--Title of top rated in settings-->
     <string name="pref_order_by_top_related_label">Top rated</string>
 
+    <!--Value of popularity used in settings-->
     <string name="pref_order_by_popularity_value" translatable="false">popular</string>
+
+    <!--Value of top rated used in settings-->
     <string name="pref_order_by_top_related_value" translatable="false">top_rated</string>
 
     <!-- Title for empty textview when there is no internet -->
@@ -32,5 +36,14 @@
 
     <!-- Title for empty textview when there is no movie details available -->
     <string name="no_details">No movies details available</string>
+
+    <!-- Content description for movie backdrop-->
+    <string name="description_backdrop">Movie backdrop</string>
+
+    <!-- Content description for movie poster-->
+    <string name="description_poster">Movie poster</string>
+
+    <!--Title of state for RecyclerView in MoviesActivity-->
+    <string name="view_state" translatable="false">state</string>
 
 </resources>
