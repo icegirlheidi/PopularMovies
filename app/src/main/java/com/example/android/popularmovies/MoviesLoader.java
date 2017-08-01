@@ -16,6 +16,8 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
 
     private final String mUrl;
 
+    private List<Movies> mList;
+
     public MoviesLoader(Context context, String url) {
         super(context);
         this.mUrl = url;
@@ -23,7 +25,11 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
 
     @Override
     protected void onStartLoading() {
-        forceLoad();
+        if (mList != null) {
+            deliverResult(mList);
+        } else {
+            forceLoad();
+        }
     }
 
     @Override
@@ -35,6 +41,12 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
         String jsonResponse = QueryUtils.fetchMovieJson(mUrl);
         // Extract usable info from json file
         return extractFeatureFromJSON(jsonResponse);
+    }
+
+    @Override
+    public void deliverResult(List<Movies> data) {
+        mList = data;
+        super.deliverResult(data);
     }
 
     /**

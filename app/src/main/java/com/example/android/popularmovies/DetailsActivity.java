@@ -24,7 +24,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     // Movie's ID
     private int mMovieId;
 
-    private ListView mList;
+    private ListView mListView;
 
     // Loader id used to initialized DetailsLoader
     private static final int LOADER_ID = 5;
@@ -41,9 +41,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         // Get movie's id passed through intent from MoviesAdapter
         mMovieId = getIntent().getIntExtra(getString(R.string.id), 0);
 
-        mList = (ListView) findViewById(R.id.list);
+        mListView = (ListView) findViewById(R.id.list);
         mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
-        mList.setAdapter(mDetailsAdapter);
+        mListView.setAdapter(mDetailsAdapter);
 
         mEmptyTextView = (TextView) findViewById(R.id.empty_text_view_details);
 
@@ -89,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
         if (moviesList != null && !(moviesList.isEmpty())) {
             mDetailsAdapter = new DetailsAdapter(this, moviesList);
-            mList.setAdapter(mDetailsAdapter);
+            mListView.setAdapter(mDetailsAdapter);
         } else {
             mEmptyTextView.setText(R.string.no_details);
         }
