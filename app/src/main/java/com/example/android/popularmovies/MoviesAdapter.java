@@ -2,7 +2,6 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,7 @@ import java.util.List;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
     private final Context mContext;
-    public final List<Movies> mMoviesList;
+    public List<Movies> mMoviesList;
 
     public MoviesAdapter(Context context, List<Movies> moviesList) {
         this.mContext = context;
@@ -69,6 +68,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         }
     }
 
-
+    public void swapData(List<Movies> movies) {
+        mMoviesList = movies;
+        if (movies != null) {
+            notifyDataSetChanged();
+        }
+    }
 
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Text size of movie title in DetailsActivity-->
+    <dimen name="title_in_details">34sp</dimen>
+
+    <!--Text size of genres in DetailsActivity-->
+    <dimen name="genres_in_details">14sp</dimen>
+
+    <!--Text size of average vote in DetailsActivity-->
+    <dimen name="vote_average_in_details">18sp</dimen>
+
+    <!--Text size of movie overview in DetailsActivity-->
+    <dimen name="overview_in_details">18sp</dimen>
+
+    <!--Margin for common use in DetailsActivity-->
+    <dimen name="margin_in_details">16dp</dimen>
+
+    <!--Backdrop height in DetailsActivity-->
+    <dimen name="backdrop_heigh_in_details">180dp</dimen>
+
+    <!--Padding for average vote in DetailsActivity-->
+    <dimen name="vote_average_padding">2dp</dimen>
+
+    <!--Height for poster in DetailsActivity-->
+    <dimen name="poster_in_details_height">220dp</dimen>
+
+    <!--Width for poster in DetailsActivity-->
+    <dimen name="poster_in_details_width">160dp</dimen>
+</resources>

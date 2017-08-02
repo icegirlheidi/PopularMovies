@@ -25,6 +25,7 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
 
     @Override
     protected void onStartLoading() {
+        // Avoid loading if mList already exists
         if (mList != null) {
             deliverResult(mList);
         } else {

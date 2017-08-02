@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -23,14 +25,12 @@ public class DetailsAdapter extends ArrayAdapter<Movies> {
     public DetailsAdapter(Context context, List<Movies> movies) {
         super(context, 0, movies);
         this.mContext = context;
-        List<Movies> mMovies = movies;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String year;
-
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(
                     R.layout.details_item, parent, false);
@@ -39,7 +39,25 @@ public class DetailsAdapter extends ArrayAdapter<Movies> {
 
         ImageView backdropImageView = (ImageView) convertView.findViewById(R.id.backdrop_image_view_details);
         String backdropPath = currentMovie.getBackdropPath();
-        Picasso.with(mContext).load(backdropPath).into(backdropImageView);
+        //create a new progress bar for each backdrop to be loaded
+        ProgressBar progressBar = null;
+        if (convertView != null) {
+            // Get and show progress bar for loading backdrop
+            progressBar = (ProgressBar) convertView.findViewById(R.id.backdropProgressBar);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        //load the image url with a callback to a callback method/class
+        Picasso.with(mContext)
+                .load(backdropPath)
+                .into(backdropImageView, new ImageLoadedCallback(progressBar) {
+                    @Override
+                    public void onSuccess() {
+                        if (this.progressBar != null) {
+                            // Once the backdrop is loaded successfully, hide the progress indicator
+                            this.progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                });
 
         TextView titleTextView = (TextView) convertView.findViewById(R.id.title_in_details);
         String originalTitle = currentMovie.getOriginalTitle();
@@ -78,5 +96,22 @@ public class DetailsAdapter extends ArrayAdapter<Movies> {
         Picasso.with(mContext).load(posterUrl).into(posterImageView);
 
         return convertView;
+    }
+
+
+    private class ImageLoadedCallback implements Callback {
+        ProgressBar progressBar;
+
+        public ImageLoadedCallback(ProgressBar progBar) {
+            progressBar = progBar;
+        }
+
+        @Override
+        public void onSuccess() {
+        }
+
+        @Override
+        public void onError() {
+        }
     }
 }

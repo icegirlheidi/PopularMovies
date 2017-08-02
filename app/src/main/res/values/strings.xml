@@ -46,4 +46,5 @@
     <!--Title of state for RecyclerView in MoviesActivity-->
     <string name="view_state" translatable="false">state</string>
 
+    <string name="line_space_multiplier">1.2</string>
 </resources>

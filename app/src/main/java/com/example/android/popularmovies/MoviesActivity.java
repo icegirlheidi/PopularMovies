@@ -44,9 +44,11 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         int spanCount = calculateNoOfColumns(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(new MoviesAdapter(this, new ArrayList<Movies>()));
+        GridLayoutManager mLayoutManager = new GridLayoutManager(this, spanCount);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        List<Movies> mMoviesList = new ArrayList<>();
+        mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
+        mRecyclerView.setAdapter(mMoviesAdapter);
 
         mEmptyTextView = (TextView) findViewById(R.id.empty_text_view);
 
@@ -92,6 +94,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
                 mEmptyTextView.setVisibility(View.INVISIBLE);
                 PREFERENCES_HAVE_BEEN_CHANGED = false;
             }
+        } else {
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(getString(R.string.no_intenet));
         }
     }
 
@@ -145,7 +150,6 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> moviesList) {
-        mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
         if (moviesList != null && !(moviesList.isEmpty())) {
             mMoviesAdapter = new MoviesAdapter(this, moviesList);
             mRecyclerView.setAdapter(mMoviesAdapter);
@@ -157,9 +161,10 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         loadingProgress.setVisibility(View.GONE);
     }
 
+
     @Override
     public void onLoaderReset(Loader<List<Movies>> loader) {
-        mMoviesAdapter = new MoviesAdapter(this, new ArrayList<Movies>());
+        mMoviesAdapter.swapData(null);
     }
 
     @Override
