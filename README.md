@@ -10,4 +10,5 @@ In the first stage, the required functionalities include:
 The data used in this app is fetched from themovieDB API https://www.themoviedb.org/documentation/api
 In order to work with the code, you're encouraged to apply for an API key starting from creating account in themoviedb.org. 
 And then following the step in this page https://www.themoviedb.org/faq/api under the question "How do I apply for an API key?"
-After getting API key, please replace the api_key stated in the file Constants.java with your own API key.
+After getting API key,  add the following attribute to your gradle.properties file using this format API_KEY = "your api key goes here".
+In Android studio, then click on Build -> Rebuild Project. The project will then build and become usable to you.
