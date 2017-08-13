@@ -41,7 +41,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         setContentView(R.layout.activity_movies);
 
         // Number of columns to show movie posters
-        int spanCount = calculateNoOfColumns(this);
+        int spanCount = numberOfColumns();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this, spanCount);
@@ -143,7 +143,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example:
         // "http://api.themoviedb.org/3/movie/popular?api_key=[your api key here]"
-        Uri uri = uriBuilder.appendPath(orderBy).appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        Uri uri = uriBuilder.appendPath(orderBy).appendQueryParameter(Constants.API_KEY_PARAM, Constants.API_KEY).build();
         // Initialize MoviesLoader
         return new MoviesLoader(this, uri.toString());
     }
@@ -175,12 +175,16 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Adjust number of columns of posters based on screen width
      *
-     * @param context the context
      * @return the number of columns
      */
-    private static int calculateNoOfColumns(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        return (int) (dpWidth / 180);
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int widthDivider = 350;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 }

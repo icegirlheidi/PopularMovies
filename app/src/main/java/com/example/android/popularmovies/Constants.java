@@ -1,9 +1,10 @@
 package com.example.android.popularmovies;
 
+
 public class Constants {
 
     // Replace this with your own API key
-    public static final String api_key = "";
+    public static final String API_KEY = BuildConfig.API_KEY;
 
     // Base url for fetching movies data through The Movie Database API
     public static final String BASE_URL = "http://api.themoviedb.org/3/movie/";

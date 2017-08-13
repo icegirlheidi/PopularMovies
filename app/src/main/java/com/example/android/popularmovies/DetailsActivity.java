@@ -81,7 +81,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         Uri baseUri = Uri.parse(Constants.BASE_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
-        uriBuilder.appendPath(String.valueOf(mMovieId)).appendQueryParameter(Constants.API_KEY_PARAM, Constants.api_key).build();
+        uriBuilder.appendPath(String.valueOf(mMovieId)).appendQueryParameter(Constants.API_KEY_PARAM, Constants.API_KEY).build();
         return new DetailsLoader(this, uriBuilder.toString());
     }
 
