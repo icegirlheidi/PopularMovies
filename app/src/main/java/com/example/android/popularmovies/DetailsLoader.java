@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailsLoader extends AsyncTaskLoader<List<Movies>> {
+public class DetailsLoader extends AsyncTaskLoader<List<Movie>> {
 
     private final String mUrl;
 
@@ -27,7 +27,7 @@ public class DetailsLoader extends AsyncTaskLoader<List<Movies>> {
     }
 
     @Override
-    public List<Movies> loadInBackground() {
+    public List<Movie> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
@@ -35,8 +35,8 @@ public class DetailsLoader extends AsyncTaskLoader<List<Movies>> {
         return extractFeatureFromJSON(jsonResponse);
     }
 
-    private static List<Movies> extractFeatureFromJSON(String moviesJSON) {
-        List<Movies> moviesList = new ArrayList<>();
+    private static List<Movie> extractFeatureFromJSON(String moviesJSON) {
+        List<Movie> moviesList = new ArrayList<>();
         List<String> genresList = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(moviesJSON);
@@ -58,7 +58,7 @@ public class DetailsLoader extends AsyncTaskLoader<List<Movies>> {
             }
             double voteAverage = jsonObject.getDouble(Constants.JSON_PARSE_VOTE_AVERAGE);
 
-            Movies movie = new Movies(originalTitle, posterPath);
+            Movie movie = new Movie(originalTitle, posterPath);
             movie.setBackdropPath(backdropPath);
             movie.setOverview(overView);
             movie.setReleaseDate(releaseDate);

@@ -23,7 +23,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int LOADER_ID = 1;
 
@@ -33,12 +36,14 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
-    private TextView mEmptyTextView;
+    @BindView(R.id.empty_text_view) TextView mEmptyTextView;
+    @BindView(R.id.loading_progress) View mLoadingProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
+        ButterKnife.bind(this);
 
         // Number of columns to show movie posters
         int spanCount = numberOfColumns();
@@ -46,11 +51,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this, spanCount);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        List<Movies> mMoviesList = new ArrayList<>();
+        List<Movie> mMoviesList = new ArrayList<>();
         mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
         mRecyclerView.setAdapter(mMoviesAdapter);
-
-        mEmptyTextView = (TextView) findViewById(R.id.empty_text_view);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -61,8 +64,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             // When there is no internet connection,
             // Remove the loading progress bar and display no internet connection
-            View loadingProgress = findViewById(R.id.loading_progress);
-            loadingProgress.setVisibility(View.GONE);
+            mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(R.string.no_intenet);
         }
@@ -97,6 +99,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(getString(R.string.no_intenet));
+            mRecyclerView.setAdapter(null);
         }
     }
 
@@ -134,7 +137,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
@@ -149,21 +152,21 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> moviesList) {
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> moviesList) {
         if (moviesList != null && !(moviesList.isEmpty())) {
             mMoviesAdapter = new MoviesAdapter(this, moviesList);
             mRecyclerView.setAdapter(mMoviesAdapter);
         } else {
             mEmptyTextView.setText(R.string.no_movies);
         }
-        View loadingProgress = findViewById(R.id.loading_progress);
+        //View loadingProgress = findViewById(R.id.loading_progress);
         // Remove loading progress bar after making http request and updating ui
-        loadingProgress.setVisibility(View.GONE);
+        mLoadingProgress.setVisibility(View.GONE);
     }
 
 
     @Override
-    public void onLoaderReset(Loader<List<Movies>> loader) {
+    public void onLoaderReset(Loader<List<Movie>> loader) {
         mMoviesAdapter.swapData(null);
     }
 

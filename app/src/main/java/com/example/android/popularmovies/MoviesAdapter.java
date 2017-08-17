@@ -13,12 +13,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
     private final Context mContext;
-    public List<Movies> mMoviesList;
+    public List<Movie> mMoviesList;
 
-    public MoviesAdapter(Context context, List<Movies> moviesList) {
+    public MoviesAdapter(Context context, List<Movie> moviesList) {
         this.mContext = context;
         this.mMoviesList = moviesList;
     }
@@ -31,7 +34,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, final int position) {
-        final Movies movie = mMoviesList.get(position);
+        final Movie movie = mMoviesList.get(position);
         TextView titleTextView = viewHolder.titleTextView;
         ImageView imageView = viewHolder.posterImageView;
 
@@ -58,17 +61,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView posterImageView;
-        public final TextView titleTextView;
+        @BindView(R.id.poster_image_view) ImageView posterImageView;
+        @BindView(R.id.title) TextView titleTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            posterImageView = (ImageView) itemView.findViewById(R.id.poster_image_view);
-            titleTextView = (TextView) itemView.findViewById(R.id.title);
+            ButterKnife.bind(this, itemView);
+
         }
     }
 
-    public void swapData(List<Movies> movies) {
+    public void swapData(List<Movie> movies) {
         mMoviesList = movies;
         if (movies != null) {
             notifyDataSetChanged();

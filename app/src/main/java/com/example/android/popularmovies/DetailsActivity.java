@@ -18,35 +18,35 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movies>> {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
 
     private DetailsAdapter mDetailsAdapter;
 
     // Movie's ID
     private int mMovieId;
 
-    private ListView mListView;
+    @BindView(R.id.list) ListView mListView;
+    @BindView(R.id.empty_text_view_details) TextView mEmptyTextView;
 
     // Loader id used to initialized DetailsLoader
     private static final int LOADER_ID = 5;
-
-    private TextView mEmptyTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        ButterKnife.bind(this);
 
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Get movie's id passed through intent from MoviesAdapter
         mMovieId = getIntent().getIntExtra(getString(R.string.id), 0);
 
-        mListView = (ListView) findViewById(R.id.list);
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
+        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
         mListView.setAdapter(mDetailsAdapter);
-
-        mEmptyTextView = (TextView) findViewById(R.id.empty_text_view_details);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -77,7 +77,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public Loader<List<Movies>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         Uri baseUri = Uri.parse(Constants.BASE_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         // Build uri, for example "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
@@ -86,8 +86,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Movies>> loader, List<Movies> moviesList) {
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> moviesList) {
+        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
         if (moviesList != null && !(moviesList.isEmpty())) {
             mDetailsAdapter = new DetailsAdapter(this, moviesList);
             mListView.setAdapter(mDetailsAdapter);
@@ -100,7 +100,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Movies>> loader) {
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movies>());
+    public void onLoaderReset(Loader<List<Movie>> loader) {
+        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
     }
 }
