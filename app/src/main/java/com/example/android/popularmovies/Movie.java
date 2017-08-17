@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-public class Movies implements Parcelable {
+public class Movie implements Parcelable {
 
     private final String mOriginalTitle;
     private final String mPosterPath;
@@ -16,12 +16,12 @@ public class Movies implements Parcelable {
     private List<String> mGenres;
     private double mVoteAverage;
 
-    public Movies(String originalTitle, String posterPath) {
+    public Movie(String originalTitle, String posterPath) {
         this.mOriginalTitle = originalTitle;
         this.mPosterPath = posterPath;
     }
 
-    protected Movies(Parcel in) {
+    protected Movie(Parcel in) {
         mOriginalTitle = in.readString();
         mPosterPath = in.readString();
         mBackdropPath = in.readString();
@@ -30,15 +30,15 @@ public class Movies implements Parcelable {
         mId = in.readInt();
     }
 
-    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
-        public Movies createFromParcel(Parcel in) {
-            return new Movies(in);
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
         }
 
         @Override
-        public Movies[] newArray(int size) {
-            return new Movies[size];
+        public Movie[] newArray(int size) {
+            return new Movie[size];
         }
     };
 

@@ -12,11 +12,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
+public class MoviesLoader extends AsyncTaskLoader<List<Movie>> {
 
     private final String mUrl;
 
-    private List<Movies> mList;
+    private List<Movie> mList;
 
     public MoviesLoader(Context context, String url) {
         super(context);
@@ -34,7 +34,7 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
     }
 
     @Override
-    public List<Movies> loadInBackground() {
+    public List<Movie> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
@@ -45,7 +45,7 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
     }
 
     @Override
-    public void deliverResult(List<Movies> data) {
+    public void deliverResult(List<Movie> data) {
         mList = data;
         super.deliverResult(data);
     }
@@ -56,8 +56,8 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
      * @param moviesJSON is the String of json
      * @return a List with class Movies
      */
-    private static List<Movies> extractFeatureFromJSON(String moviesJSON) {
-        List<Movies> moviesList = new ArrayList<>();
+    private static List<Movie> extractFeatureFromJSON(String moviesJSON) {
+        List<Movie> moviesList = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(moviesJSON);
             JSONArray results = jsonObject.getJSONArray(Constants.JSON_PARSE_RESULTS);
@@ -69,7 +69,7 @@ public class MoviesLoader extends AsyncTaskLoader<List<Movies>> {
                 String posterPath = Constants.IMAGE_BASE_URL + Constants.IMAGE_SIZE_LARGE + currentMovie.getString(Constants.JSON_PARSE_POSTER_PATH);
                 // Get the id, for example 315635;
                 int id = currentMovie.getInt(Constants.JSON_PARSE_ID);
-                Movies movie = new Movies(originalTitle, posterPath);
+                Movie movie = new Movie(originalTitle, posterPath);
                 movie.setId(id);
                 moviesList.add(movie);
             }
