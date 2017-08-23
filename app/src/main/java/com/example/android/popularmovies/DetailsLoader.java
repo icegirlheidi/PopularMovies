@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
+import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.utilities.QueryUtils;
 
 import org.json.JSONArray;

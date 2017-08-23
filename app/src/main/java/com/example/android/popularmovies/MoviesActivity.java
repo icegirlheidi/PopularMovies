@@ -1,14 +1,17 @@
 package com.example.android.popularmovies;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.app.LoaderManager;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -20,13 +23,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.model.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MoviesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MoviesActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int LOADER_ID = 1;
 
@@ -36,8 +41,14 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
-    @BindView(R.id.empty_text_view) TextView mEmptyTextView;
-    @BindView(R.id.loading_progress) View mLoadingProgress;
+    MoviesBroadcastReceiver mMoviesBroadcastReceiver = new MoviesBroadcastReceiver();
+
+    private NetworkInfo mNetworkInfo;
+
+    @BindView(R.id.empty_text_view)
+    TextView mEmptyTextView;
+    @BindView(R.id.loading_progress)
+    View mLoadingProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +67,12 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         mRecyclerView.setAdapter(mMoviesAdapter);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        mNetworkInfo = connMgr.getActiveNetworkInfo();
 
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+        if (mNetworkInfo != null && mNetworkInfo.isConnectedOrConnecting()) {
             // Initialize the loader if there is internet connection
-            getLoaderManager().initLoader(LOADER_ID, null, this);
+            //getLoaderManager().initLoader(LOADER_ID, null, this);
+            MovieIntentService.fetchMovies(this);
         } else {
             // When there is no internet connection,
             // Remove the loading progress bar and display no internet connection
@@ -80,6 +92,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
          * SharedPreference has changed.
          */
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+
     }
 
     @Override
@@ -92,7 +106,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
             // If the preferences for order by has changed, make another query and set the flag to false.
             if (PREFERENCES_HAVE_BEEN_CHANGED) {
-                getLoaderManager().restartLoader(LOADER_ID, null, this);
+                //getLoaderManager().restartLoader(LOADER_ID, null, this);
+                MovieIntentService.fetchMovies(this);
                 mEmptyTextView.setVisibility(View.INVISIBLE);
                 PREFERENCES_HAVE_BEEN_CHANGED = false;
             }
@@ -104,11 +119,37 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mMoviesBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(this)
+                    .registerReceiver(mMoviesBroadcastReceiver, new IntentFilter(MovieIntentService.ACTION_FETCH_MOVIES));
+        }
+        if (mNetworkInfo != null && mNetworkInfo.isConnectedOrConnecting()) {
+            MovieIntentService.fetchMovies(this);
+        } /*else {
+            mLoadingProgress.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(R.string.no_intenet);
+        }*/
+
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(
                 getString(R.string.view_state),
                 mRecyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mMoviesBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(this)
+                    .unregisterReceiver(mMoviesBroadcastReceiver);
+        }
     }
 
     @Override
@@ -137,40 +178,6 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
-
-        Uri baseUri = Uri.parse(Constants.BASE_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-        // Build uri, for example:
-        // "http://api.themoviedb.org/3/movie/popular?api_key=[your api key here]"
-        Uri uri = uriBuilder.appendPath(orderBy).appendQueryParameter(Constants.API_KEY_PARAM, Constants.API_KEY).build();
-        // Initialize MoviesLoader
-        return new MoviesLoader(this, uri.toString());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> moviesList) {
-        if (moviesList != null && !(moviesList.isEmpty())) {
-            mMoviesAdapter = new MoviesAdapter(this, moviesList);
-            mRecyclerView.setAdapter(mMoviesAdapter);
-        } else {
-            mEmptyTextView.setText(R.string.no_movies);
-        }
-        //View loadingProgress = findViewById(R.id.loading_progress);
-        // Remove loading progress bar after making http request and updating ui
-        mLoadingProgress.setVisibility(View.GONE);
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
-        mMoviesAdapter.swapData(null);
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         PREFERENCES_HAVE_BEEN_CHANGED = true;
     }
@@ -190,4 +197,29 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         if (nColumns < 2) return 2;
         return nColumns;
     }
+
+    public class MoviesBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || intent.getAction() == null) {
+                return;
+            }
+            String action = intent.getAction();
+            if (action.equals(MovieIntentService.ACTION_FETCH_MOVIES) && intent.hasExtra(MovieIntentService.EXTRA_MOVIES)) {
+                List<Movie> moviesList = intent.getParcelableArrayListExtra(MovieIntentService.EXTRA_MOVIES);
+                if (moviesList != null && !(moviesList.isEmpty())) {
+                    mMoviesAdapter = new MoviesAdapter(context, moviesList);
+                    mRecyclerView.setAdapter(mMoviesAdapter);
+                } else {
+                    mEmptyTextView.setText(getString(R.string.no_movies));
+                }
+
+                // Remove loading progress bar after making http request and updating ui
+                mLoadingProgress.setVisibility(View.GONE);
+
+            }
+        }
+    }
+
 }
