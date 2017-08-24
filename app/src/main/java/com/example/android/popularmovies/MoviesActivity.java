@@ -1,17 +1,11 @@
 package com.example.android.popularmovies;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.app.LoaderManager;
-import android.content.IntentFilter;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Parcelable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -22,28 +16,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.android.popularmovies.model.ListResponse;
 import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.services.MovieClient;
+import com.example.android.popularmovies.services.MovieService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class MoviesActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final int LOADER_ID = 1;
 
     private RecyclerView mRecyclerView;
 
     private MoviesAdapter mMoviesAdapter;
 
+    private MovieService movieService;
+
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
-    MoviesBroadcastReceiver mMoviesBroadcastReceiver = new MoviesBroadcastReceiver();
-
-    private NetworkInfo mNetworkInfo;
 
     @BindView(R.id.empty_text_view)
     TextView mEmptyTextView;
@@ -66,19 +65,10 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
         mRecyclerView.setAdapter(mMoviesAdapter);
 
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        mNetworkInfo = connMgr.getActiveNetworkInfo();
+        movieService = MovieClient.createService(MovieService.class);
 
-        if (mNetworkInfo != null && mNetworkInfo.isConnectedOrConnecting()) {
-            // Initialize the loader if there is internet connection
-            //getLoaderManager().initLoader(LOADER_ID, null, this);
-            MovieIntentService.fetchMovies(this);
-        } else {
-            // When there is no internet connection,
-            // Remove the loading progress bar and display no internet connection
-            mLoadingProgress.setVisibility(View.GONE);
-            mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(R.string.no_intenet);
+        if (isOnline()) {
+            fetchMovies();
         }
 
         // Scroll to lastly visible movie if there is saved instance state
@@ -93,46 +83,32 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
          */
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         // If there is no internet, do not restart loader even if user changes preference in settings
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+        if (isOnline()) {
             // If the preferences for order by has changed, make another query and set the flag to false.
             if (PREFERENCES_HAVE_BEEN_CHANGED) {
-                //getLoaderManager().restartLoader(LOADER_ID, null, this);
-                MovieIntentService.fetchMovies(this);
-                mEmptyTextView.setVisibility(View.INVISIBLE);
+                fetchMovies();
                 PREFERENCES_HAVE_BEEN_CHANGED = false;
             }
         } else {
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(getString(R.string.no_intenet));
-            mRecyclerView.setAdapter(null);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mMoviesBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(mMoviesBroadcastReceiver, new IntentFilter(MovieIntentService.ACTION_FETCH_MOVIES));
-        }
-        if (mNetworkInfo != null && mNetworkInfo.isConnectedOrConnecting()) {
-            MovieIntentService.fetchMovies(this);
-        } /*else {
-            mLoadingProgress.setVisibility(View.GONE);
-            mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(R.string.no_intenet);
-        }*/
 
+        if (isOnline()) {
+            fetchMovies();
+        }
     }
 
     @Override
@@ -146,10 +122,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     @Override
     protected void onPause() {
         super.onPause();
-        if (mMoviesBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this)
-                    .unregisterReceiver(mMoviesBroadcastReceiver);
-        }
+
     }
 
     @Override
@@ -183,6 +156,25 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     }
 
     /**
+     *
+     * @return whether interenet connection is available
+     */
+    private boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            // When there is no internet connection,
+            // Remove the loading progress bar and display no internet connection
+            mLoadingProgress.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(R.string.no_intenet);
+            return false;
+        }
+    }
+
+    /**
      * Adjust number of columns of posters based on screen width
      *
      * @return the number of columns
@@ -198,28 +190,36 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         return nColumns;
     }
 
-    public class MoviesBroadcastReceiver extends BroadcastReceiver {
+    /**
+     * Fetch a list of movies using Retrofit open resource
+     */
+    public void fetchMovies() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null || intent.getAction() == null) {
-                return;
-            }
-            String action = intent.getAction();
-            if (action.equals(MovieIntentService.ACTION_FETCH_MOVIES) && intent.hasExtra(MovieIntentService.EXTRA_MOVIES)) {
-                List<Movie> moviesList = intent.getParcelableArrayListExtra(MovieIntentService.EXTRA_MOVIES);
-                if (moviesList != null && !(moviesList.isEmpty())) {
-                    mMoviesAdapter = new MoviesAdapter(context, moviesList);
+        Call<ListResponse<Movie>> moviesCall = movieService.getMovies(orderBy);
+
+        moviesCall.enqueue(new Callback<ListResponse<Movie>>() {
+            @Override
+            public void onResponse(Call<ListResponse<Movie>> call, Response<ListResponse<Movie>> response) {
+                List<Movie> movieList = response.body().getResults();
+                if (movieList != null && !(movieList.isEmpty())) {
+                    mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
                     mRecyclerView.setAdapter(mMoviesAdapter);
+                    mLoadingProgress.setVisibility(View.GONE);
+                    mEmptyTextView.setVisibility(View.INVISIBLE);
                 } else {
+                    mEmptyTextView.setVisibility(View.VISIBLE);
                     mEmptyTextView.setText(getString(R.string.no_movies));
                 }
-
-                // Remove loading progress bar after making http request and updating ui
-                mLoadingProgress.setVisibility(View.GONE);
-
             }
-        }
+
+            @Override
+            public void onFailure(Call<ListResponse<Movie>> call, Throwable t) {
+                Toast.makeText(MoviesActivity.this, getString(R.string.no_movies), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
 }

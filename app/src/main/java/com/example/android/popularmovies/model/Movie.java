@@ -3,17 +3,34 @@ package com.example.android.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Movie implements Parcelable {
 
-    private final String mOriginalTitle;
-    private final String mPosterPath;
+    @SerializedName("original_title")
+    private String mOriginalTitle;
+
+    @SerializedName("poster_path")
+    private String mPosterPath;
+
+    @SerializedName("backdrop_path")
     private String mBackdropPath;
+
+    @SerializedName("overview")
     private String mOverview;
+
+    @SerializedName("release_date")
     private String mReleaseDate;
+
+    @SerializedName("id")
     private int mId;
+
+    @SerializedName("genres")
     private List<String> mGenres;
+
+    @SerializedName("vote_average")
     private double mVoteAverage;
 
     public Movie(String originalTitle, String posterPath) {
@@ -112,4 +129,5 @@ public class Movie implements Parcelable {
         parcel.writeString(mReleaseDate);
         parcel.writeInt(mId);
     }
+
 }

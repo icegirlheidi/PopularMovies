@@ -29,9 +29,6 @@
             android:label="@string/details"
             android:parentActivityName=".MoviesActivity" />
 
-        <service
-            android:name=".MovieIntentService"
-            android:exported="false"></service>
     </application>
 
 </manifest>
