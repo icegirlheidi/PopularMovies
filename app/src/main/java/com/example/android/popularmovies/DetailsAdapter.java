@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,27 +13,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.model.Detail;
 import com.example.android.popularmovies.model.Movie;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DetailsAdapter extends ArrayAdapter<Movie> {
+public class DetailsAdapter extends ArrayAdapter<Detail> {
 
     private final Context mContext;
 
-    public DetailsAdapter(Context context, List<Movie> movies) {
-        super(context, 0, movies);
+    public DetailsAdapter(Context context, List<Detail> details) {
+        super(context, 0, details);
         this.mContext = context;
     }
 
     static class ViewHolder {
-        //@BindView(R.id.backdrop_image_view_details) ImageView backdropImageView;
         @BindView(R.id.backdrop_image_view_details) ImageView backdropImageView;
         @BindView(R.id.title_in_details) TextView titleTextView;
         @BindView(R.id.genres_in_details) TextView genresTextView;
@@ -53,9 +55,10 @@ public class DetailsAdapter extends ArrayAdapter<Movie> {
             convertView = LayoutInflater.from(getContext()).inflate(
                     R.layout.details_item, parent, false);
         }
-        Movie currentMovie = getItem(position);
+        Detail currentDetail = getItem(position);
 
-        String backdropPath = currentMovie.getBackdropPath();
+        String backdropPathUrl = Constants.IMAGE_BASE_URL
+                + Constants.IMAGE_SIZE_EXTRA_LARGE + currentDetail.getBackdrop_path();
         //create a new progress bar for each backdrop to be loaded
         ProgressBar progressBar = null;
 
@@ -72,7 +75,7 @@ public class DetailsAdapter extends ArrayAdapter<Movie> {
 
         //load the image url with a callback to a callback method/class
         Picasso.with(mContext)
-                .load(backdropPath)
+                .load(backdropPathUrl)
                 .into(holder.backdropImageView, new ImageLoadedCallback(progressBar) {
                     @Override
                     public void onSuccess() {
@@ -83,8 +86,9 @@ public class DetailsAdapter extends ArrayAdapter<Movie> {
                     }
                 });
 
-        String originalTitle = currentMovie.getOriginalTitle();
-        String releaseDate = currentMovie.getReleaseDate();
+        String originalTitle = currentDetail.getOriginal_title();
+        holder.titleTextView.setText(originalTitle);
+        String releaseDate = currentDetail.getRelease_date();
         // If movies has release date
         if (releaseDate.contains(Constants.DATE_SEPARATOR)) {
             // Then separate the release data by "-"
@@ -98,18 +102,25 @@ public class DetailsAdapter extends ArrayAdapter<Movie> {
             holder.titleTextView.setText(originalTitle);
         }
 
-        List<String> genresList = currentMovie.getGenres();
-        // Separate each item in genresList with " | ", for example: Action | Adventure | Fantasy
-        String genresString = TextUtils.join(Constants.GENRES_SEPARATOR, genresList);
-        holder.genresTextView.setText(genresString);
+        List<Detail.Genre> genresList = currentDetail.getGenres();
+        List<String> genreNames = new ArrayList<>();
+        for (Detail.Genre genre : genresList) {
+            // Get each genre name and add them into genreNames list
+            genreNames.add(genre.getName());
+        }
+        // Separate each item in genresNames with " | ", for example: Action | Adventure | Fantasy
+        String genresNameString = TextUtils.join(Constants.GENRES_SEPARATOR, genreNames);
+        holder.genresTextView.setText(genresNameString);
 
-        double voteAverage = currentMovie.getVoteAverage();
+
+        double voteAverage = currentDetail.getVote_average();
         holder.voteAverageTextView.setText(String.valueOf(voteAverage));
 
-        String overview = currentMovie.getOverview();
+        String overview = currentDetail.getOverview();
         holder.overviewTextView.setText(overview);
 
-        String posterUrl = currentMovie.getPosterPath();
+        String posterUrl = Constants.IMAGE_BASE_URL
+                + Constants.IMAGE_SIZE_EXTRA_LARGE + currentDetail.getPoster_path();
         // Use picasso library to load poster
         Picasso.with(mContext).load(posterUrl).into(holder.posterImageView);
 

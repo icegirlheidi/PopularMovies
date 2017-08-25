@@ -11,7 +11,7 @@
     <dimen name="vote_average_in_details">20sp</dimen>
 
     <!--Text size of movie overview in DetailsActivity-->
-    <dimen name="overview_in_details">16sp</dimen>
+    <dimen name="overview_in_details">20sp</dimen>
 
     <!--Margin for common use in DetailsActivity-->
     <dimen name="margin_in_details">16dp</dimen>

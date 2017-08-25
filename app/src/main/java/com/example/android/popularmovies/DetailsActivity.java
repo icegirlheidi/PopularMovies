@@ -10,31 +10,43 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.android.popularmovies.model.Detail;
+import com.example.android.popularmovies.model.ListResponse;
 import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.services.MovieClient;
+import com.example.android.popularmovies.services.MovieService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
+public class DetailsActivity extends AppCompatActivity {
 
     private DetailsAdapter mDetailsAdapter;
 
     // Movie's ID
     private int mMovieId;
 
+    // Using ButterKnife to bind Views and ids
     @BindView(R.id.list) ListView mListView;
     @BindView(R.id.empty_text_view_details) TextView mEmptyTextView;
+    @BindView(R.id.loading_progress_details) ProgressBar mLoadingProgress;
 
-    // Loader id used to initialized DetailsLoader
-    private static final int LOADER_ID = 5;
+    // MovieService to fetch details in background using Retrofit
+    private MovieService mMovieService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,20 +59,18 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         // Get movie's id passed through intent from MoviesAdapter
         mMovieId = getIntent().getIntExtra(getString(R.string.id), 0);
 
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
+        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Detail>());
         mListView.setAdapter(mDetailsAdapter);
 
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        mMovieService = MovieClient.createService(MovieService.class);
 
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-            // Initialize the loader if there is internet connection
-            getLoaderManager().initLoader(LOADER_ID, null, this);
+        if (isOnline()) {
+            fetchDetails();
+            //
         } else {
             // When there is no internet connection,
             // Remove the loading progress bar and display no internet connection
-            View loadingProgress = findViewById(R.id.loading_progress_details);
-            loadingProgress.setVisibility(View.GONE);
+            mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(R.string.no_intenet);
         }
@@ -78,31 +88,56 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse(Constants.BASE_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-        // Build uri, for example "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
-        uriBuilder.appendPath(String.valueOf(mMovieId)).appendQueryParameter(Constants.API_KEY_PARAM, Constants.API_KEY).build();
-        return new DetailsLoader(this, uriBuilder.toString());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> moviesList) {
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
-        if (moviesList != null && !(moviesList.isEmpty())) {
-            mDetailsAdapter = new DetailsAdapter(this, moviesList);
-            mListView.setAdapter(mDetailsAdapter);
-        } else {
-            mEmptyTextView.setText(R.string.no_details);
+    /**
+     *
+     * @return whether internet connection is available
+     */
+    private boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
         }
-        View loadingProgress = findViewById(R.id.loading_progress_details);
-        // Remove loading progress bar after making http request and updating ui
-        loadingProgress.setVisibility(View.GONE);
+        return false;
     }
 
-    @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
-        mDetailsAdapter = new DetailsAdapter(this, new ArrayList<Movie>());
+    /**
+     * Fetch details of a single movie using Retrofit
+     */
+    public void fetchDetails() {
+        Call<Detail> detailsCall = mMovieService.getDetails(String.valueOf(mMovieId));
+
+        detailsCall.enqueue(new Callback<Detail>() {
+            @Override
+            public void onResponse(Call<Detail> call, Response<Detail> response) {
+                String backdropPath = response.body().getBackdrop_path();
+                List<Detail.Genre> genres = response.body().getGenres();
+                String originalTitle = response.body().getOriginal_title();
+                String overView = response.body().getOverview();
+                String posterPath = response.body().getPoster_path();
+                String releaseDate = response.body().getRelease_date();
+                double voteAverage = response.body().getVote_average();
+                Detail detail = new Detail(originalTitle, posterPath);
+                detail.setBackdrop_path(backdropPath);
+                detail.setGenres(genres);
+                detail.setOverview(overView);
+                detail.setRelease_date(releaseDate);
+                detail.setVote_average(voteAverage);
+
+                List<Detail> detailList = new ArrayList<Detail>();
+                detailList.add(0, detail);
+                if(detailList != null && !(detailList.isEmpty())) {
+                    mDetailsAdapter = new DetailsAdapter(DetailsActivity.this, detailList);
+                    mListView.setAdapter(mDetailsAdapter);
+                    mLoadingProgress.setVisibility(View.GONE);
+                    mEmptyTextView.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Detail> call, Throwable t) {
+                Toast.makeText(DetailsActivity.this, getString(R.string.no_movies), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -15,20 +15,8 @@ public class Movie implements Parcelable {
     @SerializedName("poster_path")
     private String mPosterPath;
 
-    @SerializedName("backdrop_path")
-    private String mBackdropPath;
-
-    @SerializedName("overview")
-    private String mOverview;
-
-    @SerializedName("release_date")
-    private String mReleaseDate;
-
     @SerializedName("id")
     private int mId;
-
-    @SerializedName("genres")
-    private List<String> mGenres;
 
     @SerializedName("vote_average")
     private double mVoteAverage;
@@ -41,10 +29,8 @@ public class Movie implements Parcelable {
     protected Movie(Parcel in) {
         mOriginalTitle = in.readString();
         mPosterPath = in.readString();
-        mBackdropPath = in.readString();
-        mOverview = in.readString();
-        mReleaseDate = in.readString();
         mId = in.readInt();
+        mVoteAverage = in.readDouble();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -59,17 +45,6 @@ public class Movie implements Parcelable {
         }
     };
 
-    public void setBackdropPath(String backdropPath) {
-        this.mBackdropPath = backdropPath;
-    }
-
-    public void setOverview(String overview) {
-        this.mOverview = overview;
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        this.mReleaseDate = releaseDate;
-    }
 
     public void setVoteRate(double voteAverage) {
         this.mVoteAverage = voteAverage;
@@ -77,10 +52,6 @@ public class Movie implements Parcelable {
 
     public void setId(int id) {
         this.mId = id;
-    }
-
-    public void setGenres(List<String> genres) {
-        this.mGenres = genres;
     }
 
     public String getOriginalTitle() {
@@ -91,24 +62,8 @@ public class Movie implements Parcelable {
         return mPosterPath;
     }
 
-    public String getBackdropPath() {
-        return mBackdropPath;
-    }
-
-    public String getOverview() {
-        return mOverview;
-    }
-
-    public String getReleaseDate() {
-        return mReleaseDate;
-    }
-
     public int getId() {
         return mId;
-    }
-
-    public List<String> getGenres() {
-        return mGenres;
     }
 
     public double getVoteAverage() {
@@ -124,10 +79,8 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(mOriginalTitle);
         parcel.writeString(mPosterPath);
-        parcel.writeString(mBackdropPath);
-        parcel.writeString(mOverview);
-        parcel.writeString(mReleaseDate);
         parcel.writeInt(mId);
+        parcel.writeDouble(mVoteAverage);
     }
 
 }

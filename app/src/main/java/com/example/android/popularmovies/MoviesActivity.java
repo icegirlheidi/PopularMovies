@@ -39,7 +39,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
     private MoviesAdapter mMoviesAdapter;
 
-    private MovieService movieService;
+    private MovieService mMovieService;
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
@@ -65,7 +65,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
         mRecyclerView.setAdapter(mMoviesAdapter);
 
-        movieService = MovieClient.createService(MovieService.class);
+        mMovieService = MovieClient.createService(MovieService.class);
 
         if (isOnline()) {
             fetchMovies();
@@ -157,7 +157,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
     /**
      *
-     * @return whether interenet connection is available
+     * @return whether internet connection is available
      */
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -197,7 +197,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
-        Call<ListResponse<Movie>> moviesCall = movieService.getMovies(orderBy);
+        Call<ListResponse<Movie>> moviesCall = mMovieService.getMovies(orderBy);
 
         moviesCall.enqueue(new Callback<ListResponse<Movie>>() {
             @Override
