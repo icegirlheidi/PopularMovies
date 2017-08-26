@@ -59,4 +59,6 @@ public class Constants {
     // Genres separator for data such as Action | Adventure | Fantasy
     public static final String GENRES_SEPARATOR = " | ";
 
+    public static final String YOUTUBE = "http://www.youtube.com/watch?v=";
+
 }

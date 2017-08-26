@@ -47,4 +47,10 @@
     <string name="view_state" translatable="false">state</string>
 
     <string name="line_space_multiplier">1.2</string>
+
+    <string name="review_by">--By </string>
+
+    <string name="review_label">reviews</string>
+
+    <string name="youtube">YouTube</string>
 </resources>

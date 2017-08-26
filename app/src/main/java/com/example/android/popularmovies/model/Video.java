@@ -4,11 +4,20 @@ package com.example.android.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Video implements Parcelable {
 
+    @SerializedName("id")
     private String mId;
+
+    @SerializedName("key")
     private String mKey;
+
+    @SerializedName("site")
     private String mSite;
+
+    @SerializedName("type")
     private String mType;
 
     public Video(String id, String key) {

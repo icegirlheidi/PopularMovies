@@ -3,6 +3,10 @@ package com.example.android.popularmovies.services;
 import com.example.android.popularmovies.model.Detail;
 import com.example.android.popularmovies.model.ListResponse;
 import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.model.Review;
+import com.example.android.popularmovies.model.ReviewList;
+import com.example.android.popularmovies.model.Video;
+import com.example.android.popularmovies.model.VideoList;
 
 import java.util.List;
 
@@ -18,10 +22,18 @@ public interface MovieService {
     @GET("3/movie/{sortBy}")
     Call<ListResponse<Movie>> getMovies(@Path("sortBy") String sortBy);
 
-
     // "https://api.themoviedb.org/3/movie/315635?api_key=[your api key here]"
     @GET("3/movie/{id}")
     Call<Detail> getDetails(@Path("id") String id);
+
+    // "https://api.themoviedb.org/3/movie/283366/videos?api_key=[your api key here]"
+    @GET("3/movie/{id}/videos")
+    Call<VideoList<Video>> getVideos(@Path("id") String id);
+
+    // "https://api.themoviedb.org/3/movie/283366/reviews?api_key=[your api key here]"
+    @GET("3/movie/{id}/reviews")
+    Call<ReviewList<Review>> getReviews(@Path("id") String id);
+
 }
 
 
