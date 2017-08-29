@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.FavoriteContract.FavoriteEntry;
 import com.example.android.popularmovies.model.Detail;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.ReviewList;
@@ -91,6 +93,11 @@ public class DetailsActivity extends AppCompatActivity {
     // MovieService to fetch details in background using Retrofit
     private MovieService mMovieService;
 
+    private String mPosterPath;
+
+    private String mOriginalTitle;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +136,19 @@ public class DetailsActivity extends AppCompatActivity {
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             }
+        }
+    }
+
+    @OnClick(R.id.add_favorite_button)
+    void addFavorite(View view) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FavoriteEntry.COLUMN_MOVIE_ID, mMovieId);
+        contentValues.put(FavoriteEntry.COLUMN_MOVIE_POSTER_PATH, mPosterPath);
+        contentValues.put(FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE, mOriginalTitle);
+        Uri createdRow = getContentResolver().insert(FavoriteEntry.CONTENT_URI, contentValues);
+        if(createdRow != null) {
+            mAddFavoriteButton.setImageResource(R.drawable.ic_favorite_48px);
+            Toast.makeText(this, "newly added row: " + createdRow, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -195,13 +215,13 @@ public class DetailsActivity extends AppCompatActivity {
                 String overView = response.body().getOverview();
                 mOverviewTextView.setText(overView);
 
-                String posterPath = response.body().getPoster_path();
+                mPosterPath = response.body().getPoster_path();
                 String posterUrl = Constants.IMAGE_BASE_URL
-                        + Constants.IMAGE_SIZE_EXTRA_LARGE + posterPath;
+                        + Constants.IMAGE_SIZE_EXTRA_LARGE + mPosterPath;
                 // Use picasso library to load poster
                 Picasso.with(DetailsActivity.this).load(posterUrl).into(mPosterInDetailsImageView);
 
-                String originalTitle = response.body().getOriginal_title();
+                mOriginalTitle = response.body().getOriginal_title();
                 String releaseDate = response.body().getRelease_date();
                 // If movies has release date
                 if (releaseDate.contains(Constants.DATE_SEPARATOR)) {
@@ -210,10 +230,10 @@ public class DetailsActivity extends AppCompatActivity {
                     // Assign the first part of the array as year
                     String year = parts[0];
                     // Set the title to be, for example: Beauty and the Beast (2017)
-                    mTitleInDetailsTextView.setText(originalTitle + " " + "(" + year + ")");
+                    mTitleInDetailsTextView.setText(mOriginalTitle + " " + "(" + year + ")");
                 } else {
                     // If the movies has no release date, then just set the original title to title
-                    mTitleInDetailsTextView.setText(originalTitle);
+                    mTitleInDetailsTextView.setText(mOriginalTitle);
                 }
 
                 double voteAverage = response.body().getVote_average();
@@ -257,6 +277,7 @@ public class DetailsActivity extends AppCompatActivity {
             public void onResponse(Call<ReviewList<Review>> call, Response<ReviewList<Review>> response) {
                 List<Review> reviewList = response.body().getResults();
                 if (reviewList != null && !(reviewList.isEmpty())) {
+                    Log.i("TEST", "review list size: " + reviewList.size());
                     mReviewAdapter.clear();
                     mReviewAdapter = new ReviewAdapter(DetailsActivity.this, reviewList);
                     mReviewListView.setAdapter(mReviewAdapter);
@@ -277,6 +298,8 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 
     private class ImageLoadedCallback implements com.squareup.picasso.Callback {

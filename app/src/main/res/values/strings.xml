@@ -22,11 +22,17 @@
     <!--Title of top rated in settings-->
     <string name="pref_order_by_top_related_label">Top rated</string>
 
+    <!--Title of my favorite in settings-->
+    <string name="pref_order_by_my_favorite_label">My favorite</string>
+
     <!--Value of popularity used in settings-->
     <string name="pref_order_by_popularity_value" translatable="false">popular</string>
 
     <!--Value of top rated used in settings-->
     <string name="pref_order_by_top_related_value" translatable="false">top_rated</string>
+
+    <!--Value of my favorite used in settings-->
+    <string name="pref_order_by_my_favorite_value" translatable="false">my_favorite</string>
 
     <!-- Title for empty textview when there is no internet -->
     <string name="no_intenet">No internet connection</string>
@@ -53,4 +59,6 @@
     <string name="review_label">reviews</string>
 
     <string name="youtube">YouTube</string>
+
+    <string name="add_favorite_movie_successfully">add_favorite_movie_successfully</string>
 </resources>

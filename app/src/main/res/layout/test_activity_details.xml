@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/details_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/backdropContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/backdropProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/backdrop_image_view_details"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/backdrop_heigh_in_details"
+            android:contentDescription="@string/description_backdrop"
+            android:gravity="center"
+            android:scaleType="centerCrop" />
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/title_in_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_in_details"
+        android:textColor="@color/textLight"
+        android:textSize="@dimen/title_in_details"
+        tools:text="Beauty and the Beast (2017)" />
+
+    <TextView
+        android:id="@+id/genres_in_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_in_details"
+        android:layout_marginLeft="@dimen/margin_in_details"
+        android:layout_marginRight="@dimen/margin_in_details"
+        android:textColor="@color/textPrimaryDark"
+        android:textSize="@dimen/genres_in_details"
+        tools:text="Action | Adventure | Science Fiction" />
+
+    <TextView
+        android:id="@+id/vote_average_in_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_in_details"
+        android:layout_marginRight="@dimen/margin_in_details"
+        android:drawableLeft="@drawable/ic_star_rate_white_18dp"
+        android:drawablePadding="@dimen/vote_average_padding"
+        android:drawableStart="@drawable/ic_star_rate_white_18dp"
+        android:textColor="@color/textLight"
+        android:textSize="@dimen/vote_average_in_details"
+        tools:text="7.8" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/overview_in_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_in_details"
+            android:lineSpacingMultiplier="@string/line_space_multiplier"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/overview_in_details"
+            tools:text="A live-action adaptation of Disney's version of the classic 'Beauty and the Beast' tale of a cursed prince and a beautiful young woman who helps him break the spell." />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/poster_image_view_details"
+        android:layout_width="@dimen/poster_in_details_width"
+        android:layout_height="@dimen/poster_in_details_height"
+        android:layout_margin="@dimen/margin_in_details"
+        android:contentDescription="@string/description_poster"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/reviews_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/review_label"
+        android:textAllCaps="true"
+        android:textColor="@color/textLight"
+        android:textSize="16sp"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/reviewList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawSelectorOnTop="true"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

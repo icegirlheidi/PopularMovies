@@ -28,6 +28,10 @@
             android:name=".DetailsActivity"
             android:label="@string/details"
             android:parentActivityName=".MoviesActivity" />
+        <provider
+            android:authorities="com.example.android.popularmovies"
+            android:name=".data.FavoriteProvider"
+            android:exported="false" />
 
     </application>
 

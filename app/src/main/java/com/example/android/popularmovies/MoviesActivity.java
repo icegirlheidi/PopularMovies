@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.FavoriteContract.FavoriteEntry;
 import com.example.android.popularmovies.model.ListResponse;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.services.MovieClient;
@@ -42,6 +44,8 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     private MovieService mMovieService;
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
+
+    private FavoriteCursorAdapter mFavoriteCursorAdapter;
 
 
     @BindView(R.id.empty_text_view)
@@ -156,7 +160,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     }
 
     /**
-     *
      * @return whether internet connection is available
      */
     private boolean isOnline() {
@@ -197,28 +200,52 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
-        Call<ListResponse<Movie>> moviesCall = mMovieService.getMovies(orderBy);
+        if (!(orderBy.equals("my_favorite"))) {
+            Call<ListResponse<Movie>> moviesCall = mMovieService.getMovies(orderBy);
 
-        moviesCall.enqueue(new Callback<ListResponse<Movie>>() {
-            @Override
-            public void onResponse(Call<ListResponse<Movie>> call, Response<ListResponse<Movie>> response) {
-                List<Movie> movieList = response.body().getResults();
-                if (movieList != null && !(movieList.isEmpty())) {
-                    mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
-                    mRecyclerView.setAdapter(mMoviesAdapter);
-                    mLoadingProgress.setVisibility(View.GONE);
-                    mEmptyTextView.setVisibility(View.INVISIBLE);
-                } else {
-                    mEmptyTextView.setVisibility(View.VISIBLE);
-                    mEmptyTextView.setText(getString(R.string.no_movies));
+            moviesCall.enqueue(new Callback<ListResponse<Movie>>() {
+                @Override
+                public void onResponse(Call<ListResponse<Movie>> call, Response<ListResponse<Movie>> response) {
+                    List<Movie> movieList = response.body().getResults();
+                    if (movieList != null && !(movieList.isEmpty())) {
+                        mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
+                        mRecyclerView.setAdapter(mMoviesAdapter);
+                        mLoadingProgress.setVisibility(View.GONE);
+                        mEmptyTextView.setVisibility(View.INVISIBLE);
+                    } else {
+                        mEmptyTextView.setVisibility(View.VISIBLE);
+                        mEmptyTextView.setText(getString(R.string.no_movies));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ListResponse<Movie>> call, Throwable t) {
-                Toast.makeText(MoviesActivity.this, getString(R.string.no_movies), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<ListResponse<Movie>> call, Throwable t) {
+                    Toast.makeText(MoviesActivity.this, getString(R.string.no_movies), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            fetchFavorites();
+        }
+    }
+
+    public void fetchFavorites() {
+        String[] projection = {
+                FavoriteEntry._ID,
+                FavoriteEntry.COLUMN_MOVIE_POSTER_PATH,
+                FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE,
+                FavoriteEntry.COLUMN_MOVIE_ID
+        };
+        Cursor cursor = getContentResolver().query(FavoriteEntry.CONTENT_URI, projection, null, null, null);
+        if(cursor != null) {
+            mFavoriteCursorAdapter = new FavoriteCursorAdapter(this, cursor);
+            mRecyclerView.setAdapter(mFavoriteCursorAdapter);
+            mLoadingProgress.setVisibility(View.GONE);
+            mEmptyTextView.setVisibility(View.INVISIBLE);
+        } else {
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mEmptyTextView.setText(getString(R.string.no_movies));
+        }
+
     }
 
 
