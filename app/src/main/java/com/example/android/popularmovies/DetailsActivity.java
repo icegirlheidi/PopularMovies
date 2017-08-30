@@ -1,11 +1,14 @@
 package com.example.android.popularmovies;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -66,8 +69,8 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.play_video_button)
     ImageView mPlayVideoButton;
 
-    @BindView(R.id.add_favorite_button)
-    ImageView mAddFavoriteButton;
+    @BindView(R.id.add_and_remove_favorite_button)
+    ImageView mAddAndRemoveFavoriteButton;
 
     @BindView(R.id.title_in_details)
     TextView mTitleInDetailsTextView;
@@ -139,17 +142,54 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.add_favorite_button)
-    void addFavorite(View view) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FavoriteEntry.COLUMN_MOVIE_ID, mMovieId);
-        contentValues.put(FavoriteEntry.COLUMN_MOVIE_POSTER_PATH, mPosterPath);
-        contentValues.put(FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE, mOriginalTitle);
-        Uri createdRow = getContentResolver().insert(FavoriteEntry.CONTENT_URI, contentValues);
-        if(createdRow != null) {
-            mAddFavoriteButton.setImageResource(R.drawable.ic_favorite_48px);
-            Toast.makeText(this, "newly added row: " + createdRow, Toast.LENGTH_LONG).show();
+    // Click the add and remove favorite button to add and remove favorite movie
+    @OnClick(R.id.add_and_remove_favorite_button)
+    void addAndRemoveFavorite(View view) {
+        if (isFavorite()) {
+            // If the clicked movie is already added to my favorite list
+            // then clicking it will delete it from my favorite list
+            String selection = FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+            String[] selectionArgs = new String[]{String.valueOf(mMovieId)};
+            int rowsAffected = getContentResolver().delete(FavoriteEntry.CONTENT_URI, selection, selectionArgs);
+            // If this movie is removed from my favorite list successfully
+            if (rowsAffected > 0) {
+                Toast.makeText(
+                        this,
+                        mOriginalTitle + " " + getString(R.string.movie_removed_from_favorite),
+                        Toast.LENGTH_LONG).show();
+                mAddAndRemoveFavoriteButton.setImageResource(R.drawable.ic_favorite_border_48px);
+                mAddAndRemoveFavoriteButton.setTag(R.drawable.ic_favorite_border_48px);
+            }
+        } else {
+            // If the clicked movie is not in my favorite list
+            // then clicking it will add it to my favorite list
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(FavoriteEntry.COLUMN_MOVIE_ID, mMovieId);
+            contentValues.put(FavoriteEntry.COLUMN_MOVIE_POSTER_PATH, mPosterPath);
+            contentValues.put(FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE, mOriginalTitle);
+            Uri createdRow = getContentResolver().insert(FavoriteEntry.CONTENT_URI, contentValues);
+            if (createdRow != null) {
+                // If the clicked movie is added successfully into my favorite list
+                // then change the add and remove favorite button to a full pink heart
+                mAddAndRemoveFavoriteButton.setImageResource(R.drawable.ic_favorite_48px);
+                mAddAndRemoveFavoriteButton.setTag(R.drawable.ic_favorite_48px);
+                Toast.makeText(
+                        this,
+                        mOriginalTitle + " " + getString(R.string.movie_added_to_favorite_successfully),
+                        Toast.LENGTH_LONG).show();
+            }
         }
+    }
+
+    // Check whether this movie is added as favorite
+    private boolean isFavorite() {
+        Integer resource = (Integer) mAddAndRemoveFavoriteButton.getTag();
+        // If the image resource of the button is a full pink heart
+        // it means this movie is already added to my favorite list
+        if (resource == R.drawable.ic_favorite_48px) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -183,6 +223,7 @@ public class DetailsActivity extends AppCompatActivity {
         Call<Detail> detailsCall = mMovieService.getDetails(String.valueOf(mMovieId));
 
         detailsCall.enqueue(new Callback<Detail>() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onResponse(Call<Detail> call, Response<Detail> response) {
 
@@ -203,14 +244,16 @@ public class DetailsActivity extends AppCompatActivity {
                         });
 
                 List<Detail.Genre> genresList = response.body().getGenres();
-                List<String> genreNames = new ArrayList<>();
-                for (Detail.Genre genre : genresList) {
-                    // Get each genre name and add them into genreNames list
-                    genreNames.add(genre.getName());
+                if (genresList != null && !(genresList.isEmpty())) {
+                    List<String> genreNames = new ArrayList<>();
+                    for (Detail.Genre genre : genresList) {
+                        // Get each genre name and add them into genreNames list
+                        genreNames.add(genre.getName());
+                    }
+                    // Separate each item in genresNames with " | ", for example: Action | Adventure | Fantasy
+                    String genresNameString = TextUtils.join(Constants.GENRES_SEPARATOR, genreNames);
+                    mGenresInDetailsTextView.setText(genresNameString);
                 }
-                // Separate each item in genresNames with " | ", for example: Action | Adventure | Fantasy
-                String genresNameString = TextUtils.join(Constants.GENRES_SEPARATOR, genreNames);
-                mGenresInDetailsTextView.setText(genresNameString);
 
                 String overView = response.body().getOverview();
                 mOverviewTextView.setText(overView);
@@ -238,6 +281,28 @@ public class DetailsActivity extends AppCompatActivity {
 
                 double voteAverage = response.body().getVote_average();
                 mVoteAverageInDetailsTextView.setText(String.valueOf(voteAverage));
+
+                // query sqlitedatabase to check whether this movie is added to my favorite list
+                String selection = FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+                String[] selectionArgs = new String[]{String.valueOf(mMovieId)};
+                Cursor cursor = getContentResolver().query(
+                        FavoriteEntry.CONTENT_URI,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null);
+                if (cursor.getCount() > 0) {
+                    // if this movie is in my favorite list
+                    // then set the image resource of add and remove favorite button to be a full pink heart
+                    mAddAndRemoveFavoriteButton.setImageResource(R.drawable.ic_favorite_48px);
+                    mAddAndRemoveFavoriteButton.setTag(R.drawable.ic_favorite_48px);
+                } else {
+                    // otherwise set a white border heart to be its image resource
+                    mAddAndRemoveFavoriteButton.setImageResource(R.drawable.ic_favorite_border_48px);
+                    mAddAndRemoveFavoriteButton.setTag(R.drawable.ic_favorite_border_48px);
+                }
+
             }
 
             @Override
@@ -298,8 +363,6 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 
     private class ImageLoadedCallback implements com.squareup.picasso.Callback {

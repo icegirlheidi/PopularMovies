@@ -40,6 +40,9 @@
     <!-- Title for empty textview when there is no movie available -->
     <string name="no_movies">No movies found</string>
 
+    <!-- Title for empty textview when there is no favorite movie available -->
+    <string name="no_favorite_movies">You haven\'t added any favorite movie</string>
+
     <!-- Title for empty textview when there is no movie details available -->
     <string name="no_details">No movies details available</string>
 
@@ -60,5 +63,9 @@
 
     <string name="youtube">YouTube</string>
 
-    <string name="add_favorite_movie_successfully">add_favorite_movie_successfully</string>
+    <!-- Text for toast message telling user the movie is added to my favorite successfully -->
+    <string name="movie_added_to_favorite_successfully">is added to my favorite successfully</string>
+
+    <!-- Text for toast message telling user the movie is removed from my favorite successfully -->
+    <string name="movie_removed_from_favorite">is removed from my favorite successfully</string>
 </resources>

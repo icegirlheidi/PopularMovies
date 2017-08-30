@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,6 +71,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
         mRecyclerView.setAdapter(mMoviesAdapter);
 
+
         mMovieService = MovieClient.createService(MovieService.class);
 
         if (isOnline()) {
@@ -106,14 +109,14 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         }
     }
 
-    @Override
+/*    @Override
     protected void onResume() {
         super.onResume();
 
         if (isOnline()) {
             fetchMovies();
         }
-    }
+    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -201,6 +204,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
         if (!(orderBy.equals("my_favorite"))) {
+            // Use Retrofit to fetch movies if user selects order by popularity / top rated
             Call<ListResponse<Movie>> moviesCall = mMovieService.getMovies(orderBy);
 
             moviesCall.enqueue(new Callback<ListResponse<Movie>>() {
@@ -208,7 +212,8 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
                 public void onResponse(Call<ListResponse<Movie>> call, Response<ListResponse<Movie>> response) {
                     List<Movie> movieList = response.body().getResults();
                     if (movieList != null && !(movieList.isEmpty())) {
-                        mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
+                        //mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
+                        mMoviesAdapter.swapData(movieList);
                         mRecyclerView.setAdapter(mMoviesAdapter);
                         mLoadingProgress.setVisibility(View.GONE);
                         mEmptyTextView.setVisibility(View.INVISIBLE);
@@ -224,11 +229,13 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
                 }
             });
         } else {
+            // Fetch favorite movies when user selects order by my favorite
             fetchFavorites();
         }
     }
 
     public void fetchFavorites() {
+        // Select columns _ID, poster path, original title and movie id.
         String[] projection = {
                 FavoriteEntry._ID,
                 FavoriteEntry.COLUMN_MOVIE_POSTER_PATH,
@@ -236,17 +243,17 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
                 FavoriteEntry.COLUMN_MOVIE_ID
         };
         Cursor cursor = getContentResolver().query(FavoriteEntry.CONTENT_URI, projection, null, null, null);
-        if(cursor != null) {
+        if (cursor.getCount() > 0) {
+            Log.i("TEST", "Cursor count: " + cursor.getCount());
             mFavoriteCursorAdapter = new FavoriteCursorAdapter(this, cursor);
             mRecyclerView.setAdapter(mFavoriteCursorAdapter);
             mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.INVISIBLE);
         } else {
             mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(getString(R.string.no_movies));
+            mEmptyTextView.setText(getString(R.string.no_favorite_movies));
+            mLoadingProgress.setVisibility(View.GONE);
         }
 
     }
-
-
 }

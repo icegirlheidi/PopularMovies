@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,13 @@ import com.squareup.picasso.Picasso;
 public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCursorAdapter.ViewHolder> {
 
     Context mContext;
+    Cursor mCursor;
 
-    private int mId;
 
     public FavoriteCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         this.mContext = context;
+        this.mCursor = cursor;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -40,7 +42,7 @@ public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCur
 
         String originalTitle = cursor.getString(cursor.getColumnIndex(FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE));
         String posterPath = cursor.getString(cursor.getColumnIndex(FavoriteEntry.COLUMN_MOVIE_POSTER_PATH));
-        mId = cursor.getInt(cursor.getColumnIndex(FavoriteEntry.COLUMN_MOVIE_ID));
+        final int movieId = cursor.getInt(cursor.getColumnIndex(FavoriteEntry.COLUMN_MOVIE_ID));
 
         String posterUrl = Constants.IMAGE_BASE_URL
                 + Constants.IMAGE_SIZE_EXTRA_LARGE + posterPath;
@@ -51,7 +53,7 @@ public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCur
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, DetailsActivity.class);
-                intent.putExtra(mContext.getString(R.string.id), mId);
+                intent.putExtra(mContext.getString(R.string.id), movieId);
                 mContext.startActivity(intent);
             }
         });
@@ -65,4 +67,9 @@ public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCur
         return new ViewHolder(itemView);
     }
 
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        return super.swapCursor(newCursor);
+    }
 }

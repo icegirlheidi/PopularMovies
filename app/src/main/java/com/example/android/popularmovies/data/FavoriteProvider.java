@@ -59,7 +59,7 @@ public class FavoriteProvider extends ContentProvider {
         // Set notification uri on cursor
         // If the data at URI changes, we will update the cursor
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        // Return the whole product table or a row of product
+        // Return the whole product table or a row of favorite (movie)
         return cursor;
     }
 
@@ -96,8 +96,6 @@ public class FavoriteProvider extends ContentProvider {
         // Notify all listener that the data has been changed for favorites uri
         // content://com.example.android.popularmovies/favorites/favorites
         getContext().getContentResolver().notifyChange(uri,null);
-        // Toast message telling user new favorite (movie) added successfully
-        Toast.makeText(getContext(), getContext().getString(R.string.add_favorite_movie_successfully), Toast.LENGTH_SHORT).show();
         // Return content uri with the id of the newly added row at the end
         return ContentUris.withAppendedId(uri, id);
     }
@@ -107,20 +105,22 @@ public class FavoriteProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            // If uri matches products uri, then delete the whole table
+            // If uri matches favorites uri, then delete the whole table
             case FAVORITES:
-                return deleteProduct(uri, selection, selectionArgs);
-            // If uri matches a single product, then delete a single row of product
+                return deleteFavorite(uri, selection, selectionArgs);
+            // If uri matches a single favorite (movie), then delete a single row of product
             case FAVORITE_ID:
                 selection = FavoriteEntry._ID + "=?";
                 selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
-                return deleteProduct(uri, selection, selectionArgs);
+                //selection = FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+//                selectionArgs = new String[] {};
+                return deleteFavorite(uri, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Delete is not supported for uri: " + uri);
         }
     }
 
-    private int deleteProduct(Uri uri, String selection, String[] selectionArgs) {
+    private int deleteFavorite(Uri uri, String selection, String[] selectionArgs) {
 
         SQLiteDatabase db = mFavoriteDbHelper.getWritableDatabase();
         int rowDeleted = db.delete(FavoriteEntry.TABLE_NAME, selection, selectionArgs);

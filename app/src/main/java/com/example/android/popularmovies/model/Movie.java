@@ -16,7 +16,7 @@ public class Movie implements Parcelable {
     private String mPosterPath;
 
     @SerializedName("id")
-    private int mId;
+    private int mMovieId;
 
     @SerializedName("vote_average")
     private double mVoteAverage;
@@ -29,7 +29,7 @@ public class Movie implements Parcelable {
     protected Movie(Parcel in) {
         mOriginalTitle = in.readString();
         mPosterPath = in.readString();
-        mId = in.readInt();
+        mMovieId = in.readInt();
         mVoteAverage = in.readDouble();
     }
 
@@ -50,8 +50,8 @@ public class Movie implements Parcelable {
         this.mVoteAverage = voteAverage;
     }
 
-    public void setId(int id) {
-        this.mId = id;
+    public void setMovieId(int movieId) {
+        this.mMovieId = movieId;
     }
 
     public String getOriginalTitle() {
@@ -62,8 +62,8 @@ public class Movie implements Parcelable {
         return mPosterPath;
     }
 
-    public int getId() {
-        return mId;
+    public int getMovieId() {
+        return mMovieId;
     }
 
     public double getVoteAverage() {
@@ -79,7 +79,7 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(mOriginalTitle);
         parcel.writeString(mPosterPath);
-        parcel.writeInt(mId);
+        parcel.writeInt(mMovieId);
         parcel.writeDouble(mVoteAverage);
     }
 
