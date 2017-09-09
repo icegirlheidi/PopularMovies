@@ -45,14 +45,14 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         }
 
         Review review = getItem(position);
-/*        ViewHolder holder;
+        ViewHolder holder;
         if (convertView != null) {
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
-        }*/
-        ViewHolder holder = new ViewHolder(convertView);
+        }
+        holder = new ViewHolder(convertView);
         String reviewAuthor = review.getAuthor();
         holder.reviewAuthor.setText(getContext().getString(R.string.review_by) + " " + reviewAuthor);
 

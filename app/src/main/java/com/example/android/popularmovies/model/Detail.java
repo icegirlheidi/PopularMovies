@@ -26,6 +26,10 @@ public class Detail implements Parcelable {
 
     private double vote_average;
 
+    private int runtime;
+
+    private List<Language> spoken_languages;
+
     public String getBackdrop_path() {
         return backdrop_path;
     }
@@ -82,7 +86,7 @@ public class Detail implements Parcelable {
         this.release_date = release_date;
     }
 
-    public Detail (String originalTitle, String posterPath) {
+    public Detail(String originalTitle, String posterPath) {
         this.original_title = originalTitle;
         this.poster_path = posterPath;
     }
@@ -95,6 +99,23 @@ public class Detail implements Parcelable {
         this.vote_average = vote_average;
     }
 
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
+
+
+    public List<Language> getSpoken_languages() {
+        return spoken_languages;
+    }
+
+    public void setSpoken_languages(List<Language> spoken_languages) {
+        this.spoken_languages = spoken_languages;
+    }
+
     protected Detail(Parcel in) {
         backdrop_path = in.readString();
         id = in.readInt();
@@ -102,6 +123,8 @@ public class Detail implements Parcelable {
         overview = in.readString();
         poster_path = in.readString();
         release_date = in.readString();
+        vote_average = in.readDouble();
+        runtime = in.readInt();
     }
 
     public static final Creator<Detail> CREATOR = new Creator<Detail>() {
@@ -129,6 +152,8 @@ public class Detail implements Parcelable {
         dest.writeString(overview);
         dest.writeString(poster_path);
         dest.writeString(release_date);
+        dest.writeDouble(vote_average);
+        dest.writeInt(runtime);
     }
 
     public class Genre {
@@ -143,6 +168,29 @@ public class Detail implements Parcelable {
 
         public void setId(int id) {
             this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public class Language{
+
+        private String iso_639_1;
+
+        private String name;
+
+        public String getIso_639_1() {
+            return iso_639_1;
+        }
+
+        public void setIso_639_1(String iso_639_1) {
+            this.iso_639_1 = iso_639_1;
         }
 
         public String getName() {

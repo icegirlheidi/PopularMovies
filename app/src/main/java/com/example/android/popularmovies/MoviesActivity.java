@@ -109,14 +109,21 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         }
     }
 
-/*    @Override
+    @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String orderBy = sharedPreferences.getString(
+                getString(R.string.pref_order_by_key),
+                getString(R.string.pref_order_by_popularity_value));
 
+        // If the setting is order by my favorite, then fetch my favorites movies.
+        // So that if any movie is added to or removed from my favorite list,
+        // The favorite list will reload when user returns from details to movie list
         if (isOnline()) {
-            fetchMovies();
+            if(orderBy.equals("my_favorite")) fetchFavorites();
         }
-    }*/
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -212,7 +219,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
                 public void onResponse(Call<ListResponse<Movie>> call, Response<ListResponse<Movie>> response) {
                     List<Movie> movieList = response.body().getResults();
                     if (movieList != null && !(movieList.isEmpty())) {
-                        //mMoviesAdapter = new MoviesAdapter(MoviesActivity.this, movieList);
                         mMoviesAdapter.swapData(movieList);
                         mRecyclerView.setAdapter(mMoviesAdapter);
                         mLoadingProgress.setVisibility(View.GONE);
@@ -244,7 +250,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         };
         Cursor cursor = getContentResolver().query(FavoriteEntry.CONTENT_URI, projection, null, null, null);
         if (cursor.getCount() > 0) {
-            Log.i("TEST", "Cursor count: " + cursor.getCount());
             mFavoriteCursorAdapter = new FavoriteCursorAdapter(this, cursor);
             mRecyclerView.setAdapter(mFavoriteCursorAdapter);
             mLoadingProgress.setVisibility(View.GONE);

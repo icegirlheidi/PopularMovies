@@ -45,7 +45,7 @@ public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCur
         final int movieId = cursor.getInt(cursor.getColumnIndex(FavoriteEntry.COLUMN_MOVIE_ID));
 
         String posterUrl = Constants.IMAGE_BASE_URL
-                + Constants.IMAGE_SIZE_EXTRA_LARGE + posterPath;
+                + Constants.IMAGE_SIZE_W342 + posterPath;
         Picasso.with(mContext).load(posterUrl).into(viewHolder.mPosterImageView);
         viewHolder.mOriginalTitleTextView.setText(originalTitle);
 

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/colorPrimaryDark">
 
     <TextView
         android:id="@+id/review_content"
@@ -15,7 +16,7 @@
         android:lineSpacingMultiplier="1.2"
         android:textSize="16sp"
         android:textColor="@color/textLight"
-        tools:text="Well one certainly cannot accuse filmmaker Tim Burton from straying away from his trademark bizarre movie-making playbook. Perhaps Burton’s best asset when it comes to his brand of distinctive cinema is to faithfully maintain that solid sense of oddness in the manner for which he presents his randomly spry, off-kilter narratives? There was always this consistent understanding that Burton enthusiastically embraces the whimsical peculiarities of his colorful, cockeyed characterizations. Naturally, the eccentric Burton would be drawn to yet another off-balance project that is right up his weirdly imaginative alley. Hence, in Miss Peregrine’s Home for Peculiar Children the notoriously quirky director is true to form as he presents another delightfully macabre and freakish showcase that will definitely appeal to the darkened nature of the kiddie crowd." />
+        tools:text="Well one certainly cannot accuse filmmaker Tim Burton from straying away from his trademark bizarre movie-making playbook. Perhaps Burton’s best asset when it comes to his brand of distinctive cinema is to faithfully maintain that solid sense of oddness in the manner for which he presents his randomly spry, off-kilter narratives? There was always this consistent understanding that Burton enthusiastically embraces the whimsical peculiarities of his colorful, cockeyed characterizations. " />
 
     <TextView
         android:id="@+id/review_author"
@@ -23,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:textAlignment="textEnd"
-        android:textStyle="italic"
+        android:textStyle="bold"
         android:textColor="@color/textLight"
         tools:text="-- By Frank Ochieng" />
 

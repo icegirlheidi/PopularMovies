@@ -47,7 +47,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         ImageView posterImageView = viewHolder.posterImageView;
 
         String posterPath = movie.getPosterPath();
-        String posterUrl = Constants.IMAGE_BASE_URL+ Constants.IMAGE_SIZE_LARGE + posterPath;
+        String posterUrl = Constants.IMAGE_BASE_URL+ Constants.IMAGE_SIZE_W185 + posterPath;
         // User Picasso library to load poster into ImageView
         Picasso.with(mContext).load(posterUrl).into(posterImageView);
         String originalTitle = movie.getOriginalTitle();

@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +45,6 @@ import retrofit2.Response;
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = DetailsActivity.class.getName();
-
-    private ReviewAdapter mReviewAdapter;
 
     // Movie's ID
     private int mMovieId;
@@ -81,6 +78,9 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.vote_average_in_details)
     TextView mVoteAverageInDetailsTextView;
 
+    @BindView(R.id.runtime_in_details)
+    TextView mRuntimeInDetailsTextView;
+
     @BindView(R.id.overview_in_details)
     TextView mOverviewTextView;
 
@@ -90,8 +90,20 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.reviews_label)
     TextView mReviewLabelTextView;
 
-    @BindView(R.id.reviewList)
-    ListView mReviewListView;
+    @BindView(R.id.divider_before_review)
+    View dividerBeforeReview;
+
+    @BindView(R.id.divider_after_review)
+    View dividerAfterReview;
+
+    @BindView(R.id.show_and_hide_reviews)
+    ImageView showAndHideReviewImageView;
+
+    @BindView(R.id.reviews)
+    TextView mReviewTextView;
+
+    @BindView(R.id.language_in_details)
+    TextView languageTextView;
 
     // MovieService to fetch details in background using Retrofit
     private MovieService mMovieService;
@@ -112,9 +124,6 @@ public class DetailsActivity extends AppCompatActivity {
         // Get movie's id passed through intent from MoviesAdapter
         mMovieId = getIntent().getIntExtra(getString(R.string.id), 0);
 
-        mReviewAdapter = new ReviewAdapter(DetailsActivity.this, new ArrayList<Review>());
-        mReviewListView.setAdapter(mReviewAdapter);
-
         mMovieService = MovieClient.createService(MovieService.class);
 
         if (isOnline()) {
@@ -128,7 +137,19 @@ public class DetailsActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(R.string.no_intenet);
         }
+    }
 
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.play_video_button)
@@ -139,6 +160,22 @@ public class DetailsActivity extends AppCompatActivity {
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             }
+        }
+    }
+
+    // Click the up or down arrow to hide or show reviews
+    @OnClick(R.id.show_and_hide_reviews)
+    void showAndHideReviews(View view) {
+        if(hasReview()) {
+            mReviewTextView.setVisibility(View.GONE);
+            dividerAfterReview.setVisibility(View.VISIBLE);
+            showAndHideReviewImageView.setImageResource(R.drawable.ic_keyboard_arrow_down_24px);
+            showAndHideReviewImageView.setTag(R.drawable.ic_keyboard_arrow_down_24px);
+        } else {
+            mReviewTextView.setVisibility(View.VISIBLE);
+            dividerAfterReview.setVisibility(View.INVISIBLE);
+            showAndHideReviewImageView.setImageResource(R.drawable.ic_keyboard_arrow_up_24px);
+            showAndHideReviewImageView.setTag(R.drawable.ic_keyboard_arrow_up_24px);
         }
     }
 
@@ -181,27 +218,29 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Check whether this movie is added as favorite
+    /**
+     * @Return whether this movie is added as favorite
+     */
     private boolean isFavorite() {
-        Integer resource = (Integer) mAddAndRemoveFavoriteButton.getTag();
+        Integer resourceFavorite = (Integer) mAddAndRemoveFavoriteButton.getTag();
         // If the image resource of the button is a full pink heart
         // it means this movie is already added to my favorite list
-        if (resource == R.drawable.ic_favorite_48px) {
+        if (resourceFavorite == R.drawable.ic_favorite_48px) {
             return true;
         }
         return false;
     }
 
+    /**
+     * @Return whether reviews are shown or not
+     */
+    private boolean hasReview() {
+        Integer resourceReview = (Integer) showAndHideReviewImageView.getTag();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+        if(resourceReview != null && resourceReview == R.drawable.ic_keyboard_arrow_up_24px) {
+            return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     /**
@@ -229,7 +268,7 @@ public class DetailsActivity extends AppCompatActivity {
 
                 String backdropPath = response.body().getBackdrop_path();
                 String backdropPathUrl = Constants.IMAGE_BASE_URL
-                        + Constants.IMAGE_SIZE_EXTRA_LARGE + backdropPath;
+                        + Constants.IMAGE_SIZE_W342 + backdropPath;
                 //load the image url with a callback to a callback method/class
                 Picasso.with(DetailsActivity.this)
                         .load(backdropPathUrl)
@@ -260,7 +299,7 @@ public class DetailsActivity extends AppCompatActivity {
 
                 mPosterPath = response.body().getPoster_path();
                 String posterUrl = Constants.IMAGE_BASE_URL
-                        + Constants.IMAGE_SIZE_EXTRA_LARGE + mPosterPath;
+                        + Constants.IMAGE_SIZE_W185 + mPosterPath;
                 // Use picasso library to load poster
                 Picasso.with(DetailsActivity.this).load(posterUrl).into(mPosterInDetailsImageView);
 
@@ -281,6 +320,19 @@ public class DetailsActivity extends AppCompatActivity {
 
                 double voteAverage = response.body().getVote_average();
                 mVoteAverageInDetailsTextView.setText(String.valueOf(voteAverage));
+
+                int runtime = response.body().getRuntime();
+                mRuntimeInDetailsTextView.setText(String.valueOf(runtime) + " " + getString(R.string.runtime_min));
+
+                List<Detail.Language> languagesList = response.body().getSpoken_languages();
+                List<String> languageNames = new ArrayList<>();
+                if(languagesList!= null && !(languagesList.isEmpty())) {
+                    for(Detail.Language language : languagesList) {
+                        languageNames.add(language.getIso_639_1());
+                    }
+                }
+                String languagesNameString = TextUtils.join(", ", languageNames);
+                languageTextView.setText(languagesNameString);
 
                 // query sqlitedatabase to check whether this movie is added to my favorite list
                 String selection = FavoriteEntry.COLUMN_MOVIE_ID + "=?";
@@ -342,18 +394,23 @@ public class DetailsActivity extends AppCompatActivity {
             public void onResponse(Call<ReviewList<Review>> call, Response<ReviewList<Review>> response) {
                 List<Review> reviewList = response.body().getResults();
                 if (reviewList != null && !(reviewList.isEmpty())) {
-                    Log.i("TEST", "review list size: " + reviewList.size());
-                    mReviewAdapter.clear();
-                    mReviewAdapter = new ReviewAdapter(DetailsActivity.this, reviewList);
-                    mReviewListView.setAdapter(mReviewAdapter);
-                    mReviewLabelTextView.setVisibility(View.VISIBLE);
-
-/*                    for (Review review : reviewList) {
-                       mReviewAdapter.add(review);
-                    }*/
-
+                    List<String> reviewStringList = new ArrayList<>();
+                    for (int i = 0; i < reviewList.size(); i++) {
+                        Review currentReview = reviewList.get(i);
+                        // Get the review content and author and trim off white spaces
+                        String content = currentReview.getContent().trim();
+                        String author = "--By " + currentReview.getAuthor().trim() + "\n";
+                        reviewStringList.add(content);
+                        reviewStringList.add(author);
+                    }
+                    String reviews = TextUtils.join("\n\n", reviewStringList);
+                    mReviewTextView.setText(reviews);
                 } else {
                     mReviewLabelTextView.setVisibility(View.GONE);
+                    mReviewTextView.setVisibility(View.GONE);
+                    dividerBeforeReview.setVisibility(View.GONE);
+                    dividerAfterReview.setVisibility(View.GONE);
+                    showAndHideReviewImageView.setVisibility(View.GONE);
                 }
             }
 

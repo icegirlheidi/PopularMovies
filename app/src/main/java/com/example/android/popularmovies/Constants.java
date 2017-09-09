@@ -14,11 +14,18 @@ public class Constants {
     // Base url for fetching image data through The Movie Database API
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
 
-    // Value of large image size
-    public static final String IMAGE_SIZE_LARGE = "w185/";
+    // Value of image with size w154
+    public static final String IMAGE_SIZE_W154 = "w154/";
 
-    // Value of extra large image size
-    public static final String IMAGE_SIZE_EXTRA_LARGE = "w342/";
+    // Value of image with size w185
+    public static final String IMAGE_SIZE_W185 = "w185/";
+
+    // Value of image with size w342
+    public static final String IMAGE_SIZE_W342 = "w342/";
+
+
+    // Value of image with size w500
+    public static final String IMAGE_SIZE_W500 = "w500/";
 
     // Query parameter api_key
     public static final String API_KEY_PARAM = "api_key";
