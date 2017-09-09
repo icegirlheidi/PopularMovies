@@ -10,6 +10,12 @@
     <!--Text size of average vote in DetailsActivity-->
     <dimen name="vote_average_in_details">20sp</dimen>
 
+    <!--Text size of runtime in DetailsActivity-->
+    <dimen name="runtime_in_details">20sp</dimen>
+
+    <!--Text size of language in DetailsActivity-->
+    <dimen name="language_in_details">20sp</dimen>
+
     <!--Text size of movie overview in DetailsActivity-->
     <dimen name="overview_in_details">20sp</dimen>
 
@@ -21,6 +27,12 @@
 
     <!--Padding for average vote in DetailsActivity-->
     <dimen name="vote_average_padding">5dp</dimen>
+
+    <!--Padding for runtime in DetailsActivity-->
+    <dimen name="runtime_padding">5dp</dimen>
+
+    <!--Padding for language in DetailsActivity-->
+    <dimen name="language_padding">5dp</dimen>
 
     <!--Height for poster in DetailsActivity-->
     <dimen name="poster_in_details_height">220dp</dimen>

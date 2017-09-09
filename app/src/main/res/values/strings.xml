@@ -68,4 +68,7 @@
 
     <!-- Text for toast message telling user the movie is removed from my favorite successfully -->
     <string name="movie_removed_from_favorite">is removed from my favorite successfully</string>
+
+    <!-- Text for runtime in DetailsActivity -->
+    <string name="runtime_min">min</string>
 </resources>
