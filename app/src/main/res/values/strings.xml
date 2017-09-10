@@ -59,7 +59,11 @@
 
     <string name="review_by">--By </string>
 
+    <!-- Title for reviews label in details -->
     <string name="review_label">reviews</string>
+
+    <!-- Title for videos label in details -->
+    <string name="video_label">videos</string>
 
     <string name="youtube">YouTube</string>
 

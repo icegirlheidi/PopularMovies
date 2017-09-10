@@ -1,21 +1,14 @@
 package com.example.android.popularmovies;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.android.popularmovies.data.MovieContract.MovieEntry;
-import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 

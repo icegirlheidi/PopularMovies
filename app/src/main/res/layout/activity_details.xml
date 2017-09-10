@@ -28,7 +28,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -39,7 +40,9 @@
                 <RelativeLayout
                     android:id="@+id/backdropContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
 
                     <ProgressBar
                         android:id="@+id/backdropProgressBar"
@@ -61,12 +64,23 @@
                             android:layout_height="200dp"
                             tools:background="@drawable/backdrop_w342" />
 
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="200dp"
+                                android:background="@drawable/gradient_background"/>
+                        </FrameLayout>
+
+
                         <ImageView
                             android:id="@+id/play_video_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:background="@drawable/ic_play_circle_outline_white_48px" />
+                            android:background="@drawable/ic_play_circle_outline_48px" />
 
                         <ImageView
                             android:id="@+id/add_and_remove_favorite_button"
@@ -129,7 +143,7 @@
                             android:drawableLeft="@drawable/ic_star_18px"
                             android:drawablePadding="@dimen/vote_average_padding"
                             android:drawableStart="@drawable/ic_star_18px"
-                            android:textColor="@color/textLight"
+                            android:textColor="@color/textPrimary"
                             android:textSize="@dimen/vote_average_in_details"
                             tools:text="7.8" />
 
@@ -141,7 +155,7 @@
                             android:drawableLeft="@drawable/ic_access_time_24px"
                             android:drawablePadding="@dimen/runtime_padding"
                             android:drawableStart="@drawable/ic_access_time_24px"
-                            android:textColor="@color/textLight"
+                            android:textColor="@color/textPrimary"
                             android:textSize="@dimen/runtime_in_details"
                             tools:text="120 min" />
 
@@ -155,7 +169,7 @@
                             android:drawableLeft="@drawable/ic_language_24px"
                             android:drawablePadding="5dp"
                             android:drawableStart="@drawable/ic_language_24px"
-                            android:textColor="@color/textLight"
+                            android:textColor="@color/textPrimary"
                             android:textSize="@dimen/language_in_details"
                             tools:text="de, pl, he, en" />
 
@@ -180,7 +194,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="16dp"
-                    android:background="@color/divider" />
+                    android:background="@color/dividerLight" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -215,26 +229,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="16dp"
-                    android:background="@color/divider" />
+                    android:background="@color/dividerLight" />
 
-                <TextView
-                    android:id="@+id/reviews"
-                    android:layout_width="match_parent"
+                <com.example.android.popularmovies.NonScrollListView
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/review_list_view"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:fontFamily="sans-serif-light"
-                    android:lineSpacingMultiplier="1.2"
-                    android:textColor="@color/textSecondary"
-                    android:visibility="gone"
-                    tools:text="Only beauty would conquer the beast!**\r\n\r\nThis is not the first time screen adaptation, that means every one of us have seen either version of the films according to what generation we belong. Mine was the animated one and then there was a modern-day version called 'Beastly'. Not to forget there's a recent French version made on the big scale that I yet to watch. So it's not about the story at all." />
-
+                    android:animationCache="false"
+                    android:divider="@color/divider"
+                    android:dividerHeight="1dp"
+                    android:smoothScrollbar="true"
+                    android:scrollingCache="false"/>
 
                 <View
                     android:id="@+id/divider_before_video"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/divider"
+                    android:background="@color/dividerLight"
                     android:visibility="gone"/>
 
                 <RelativeLayout
@@ -263,17 +275,36 @@
                         android:layout_gravity="end"
                         android:layout_marginRight="16dp"
                         android:src="@drawable/ic_keyboard_arrow_down_24px" />
+
                 </RelativeLayout>
 
                 <View
                     android:id="@+id/divider_after_video"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginBottom="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="@color/divider" />
+                    android:background="@color/dividerLight" />
+
+                <com.example.android.popularmovies.NonScrollListView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/video_list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animationCache="false"
+                    android:smoothScrollbar="true"
+                    android:scrollingCache="false"
+                    android:divider="@color/divider"
+                    android:dividerHeight="1dp"/>
+
+                <View
+                    android:id="@+id/divider_last"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerLight"
+                    android:visibility="gone"/>
+
 
             </LinearLayout>
+
 
         </ScrollView>
 

@@ -12,20 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-light"
         android:lineSpacingMultiplier="1.2"
         android:textSize="16sp"
-        android:textColor="@color/textLight"
-        tools:text="Well one certainly cannot accuse filmmaker Tim Burton from straying away from his trademark bizarre movie-making playbook. Perhaps Burton’s best asset when it comes to his brand of distinctive cinema is to faithfully maintain that solid sense of oddness in the manner for which he presents his randomly spry, off-kilter narratives? There was always this consistent understanding that Burton enthusiastically embraces the whimsical peculiarities of his colorful, cockeyed characterizations. " />
+        android:textColor="@color/textPrimary"
+        tools:text="I ΛM GЯӨӨƬ!"/>
 
     <TextView
         android:id="@+id/review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textAlignment="textEnd"
-        android:textStyle="bold"
-        android:textColor="@color/textLight"
-        tools:text="-- By Frank Ochieng" />
+        android:gravity="right"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/textPrimaryDark"
+        tools:text="-- By Eazyryda" />
 
 </LinearLayout>

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +52,9 @@ public class DetailsActivity extends AppCompatActivity {
     private int mMovieId;
 
     private String mVideoKey;
+
+    // A list of keys get from videos
+    private List<String> mVideoKeyList;
 
     @BindView(R.id.empty_text_view_details)
     TextView mEmptyTextView;
@@ -90,6 +95,9 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.reviews_label)
     TextView mReviewLabelTextView;
 
+    @BindView(R.id.videos_label)
+    TextView mVideoLabelTextView;
+
     @BindView(R.id.divider_before_review)
     View dividerBeforeReview;
 
@@ -99,11 +107,26 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.show_and_hide_reviews)
     ImageView showAndHideReviewImageView;
 
-    @BindView(R.id.reviews)
-    TextView mReviewTextView;
+    @BindView(R.id.show_and_hide_videos)
+    ImageView showAndHideVideoImageView;
 
     @BindView(R.id.language_in_details)
     TextView languageTextView;
+
+    @BindView(R.id.divider_before_video)
+    View dividerBeforeVideoView;
+
+    @BindView(R.id.divider_after_video)
+    View dividerAfterVideoView;
+
+    @BindView(R.id.divider_last)
+    View dividerLast;
+
+    @BindView(R.id.review_list_view)
+    NonScrollListView reviewListView;
+
+    @BindView(R.id.video_list_view)
+    NonScrollListView videoListView;
 
     // MovieService to fetch details in background using Retrofit
     private MovieService mMovieService;
@@ -140,7 +163,6 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
@@ -166,16 +188,35 @@ public class DetailsActivity extends AppCompatActivity {
     // Click the up or down arrow to hide or show reviews
     @OnClick(R.id.show_and_hide_reviews)
     void showAndHideReviews(View view) {
-        if(hasReview()) {
-            mReviewTextView.setVisibility(View.GONE);
+        if (hasReview()) {
+            reviewListView.setVisibility(View.GONE);
             dividerAfterReview.setVisibility(View.VISIBLE);
             showAndHideReviewImageView.setImageResource(R.drawable.ic_keyboard_arrow_down_24px);
             showAndHideReviewImageView.setTag(R.drawable.ic_keyboard_arrow_down_24px);
+            dividerBeforeVideoView.setVisibility(View.GONE);
         } else {
-            mReviewTextView.setVisibility(View.VISIBLE);
+            reviewListView.setVisibility(View.VISIBLE);
             dividerAfterReview.setVisibility(View.INVISIBLE);
             showAndHideReviewImageView.setImageResource(R.drawable.ic_keyboard_arrow_up_24px);
             showAndHideReviewImageView.setTag(R.drawable.ic_keyboard_arrow_up_24px);
+            dividerBeforeVideoView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @OnClick(R.id.show_and_hide_videos)
+    void showAndHideVideos(View view) {
+        if (hasVideo()) {
+            videoListView.setVisibility(View.GONE);
+            dividerAfterVideoView.setVisibility(View.VISIBLE);
+            showAndHideVideoImageView.setImageResource(R.drawable.ic_keyboard_arrow_down_24px);
+            showAndHideVideoImageView.setTag(R.drawable.ic_keyboard_arrow_down_24px);
+            dividerLast.setVisibility(View.GONE);
+        } else {
+            videoListView.setVisibility(View.VISIBLE);
+            dividerAfterVideoView.setVisibility(View.INVISIBLE);
+            showAndHideVideoImageView.setImageResource(R.drawable.ic_keyboard_arrow_up_24px);
+            showAndHideVideoImageView.setTag(R.drawable.ic_keyboard_arrow_up_24px);
+            dividerLast.setVisibility(View.VISIBLE);
         }
     }
 
@@ -218,6 +259,17 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    @OnItemClick(R.id.video_list_view)
+    void onItemClick(int position){
+        if ( mVideoKeyList != null && !mVideoKey.isEmpty() ) {
+            Uri youtubeUri = Uri.parse(Constants.YOUTUBE + mVideoKeyList.get(position));
+            Intent intent = new Intent(Intent.ACTION_VIEW, youtubeUri);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        }
+    }
+
     /**
      * @Return whether this movie is added as favorite
      */
@@ -237,7 +289,19 @@ public class DetailsActivity extends AppCompatActivity {
     private boolean hasReview() {
         Integer resourceReview = (Integer) showAndHideReviewImageView.getTag();
 
-        if(resourceReview != null && resourceReview == R.drawable.ic_keyboard_arrow_up_24px) {
+        if (resourceReview != null && resourceReview == R.drawable.ic_keyboard_arrow_up_24px) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @Return whether videos are shown or not
+     */
+    private boolean hasVideo() {
+        Integer resourceVideo = (Integer) showAndHideVideoImageView.getTag();
+
+        if (resourceVideo != null && resourceVideo == R.drawable.ic_keyboard_arrow_up_24px) {
             return true;
         }
         return false;
@@ -326,8 +390,8 @@ public class DetailsActivity extends AppCompatActivity {
 
                 List<Detail.Language> languagesList = response.body().getSpoken_languages();
                 List<String> languageNames = new ArrayList<>();
-                if(languagesList!= null && !(languagesList.isEmpty())) {
-                    for(Detail.Language language : languagesList) {
+                if (languagesList != null && !(languagesList.isEmpty())) {
+                    for (Detail.Language language : languagesList) {
                         languageNames.add(language.getIso_639_1());
                     }
                 }
@@ -374,10 +438,23 @@ public class DetailsActivity extends AppCompatActivity {
         videosCall.enqueue(new Callback<VideoList<Video>>() {
             @Override
             public void onResponse(Call<VideoList<Video>> call, Response<VideoList<Video>> response) {
-                List<Video> videosList = response.body().getResults();
-                if (videosList.get(0).getSite().equals(DetailsActivity.this.getString(R.string.youtube))) {
-                    mVideoKey = videosList.get(0).getKey();
-                }
+                if(response.body() != null) {
+                    List<Video> videosList = response.body().getResults();
+                    if (videosList != null && !(videosList.isEmpty())) {
+
+                        if (videosList.get(0).getSite().equals(DetailsActivity.this.getString(R.string.youtube))) {
+                            mVideoKey = videosList.get(0).getKey();
+                        }
+                        mVideoKeyList = new ArrayList<>();
+                        for(Video video : videosList){
+                            mVideoKeyList.add(video.getKey());
+                        }
+
+                        VideoAdapter adapter = new VideoAdapter(getApplicationContext(), videosList);
+                        videoListView.setAdapter(adapter);
+                        videoListView.setVisibility(View.GONE);
+                    } else HideVideo();
+                } else HideVideo();
             }
 
             @Override
@@ -392,26 +469,14 @@ public class DetailsActivity extends AppCompatActivity {
         reviewsCall.enqueue(new Callback<ReviewList<Review>>() {
             @Override
             public void onResponse(Call<ReviewList<Review>> call, Response<ReviewList<Review>> response) {
-                List<Review> reviewList = response.body().getResults();
-                if (reviewList != null && !(reviewList.isEmpty())) {
-                    List<String> reviewStringList = new ArrayList<>();
-                    for (int i = 0; i < reviewList.size(); i++) {
-                        Review currentReview = reviewList.get(i);
-                        // Get the review content and author and trim off white spaces
-                        String content = currentReview.getContent().trim();
-                        String author = "--By " + currentReview.getAuthor().trim() + "\n";
-                        reviewStringList.add(content);
-                        reviewStringList.add(author);
-                    }
-                    String reviews = TextUtils.join("\n\n", reviewStringList);
-                    mReviewTextView.setText(reviews);
-                } else {
-                    mReviewLabelTextView.setVisibility(View.GONE);
-                    mReviewTextView.setVisibility(View.GONE);
-                    dividerBeforeReview.setVisibility(View.GONE);
-                    dividerAfterReview.setVisibility(View.GONE);
-                    showAndHideReviewImageView.setVisibility(View.GONE);
-                }
+                if (response.body() != null) {
+                    List<Review> reviewList = response.body().getResults();
+                    if (reviewList != null && !(reviewList.isEmpty())) {
+                        ReviewAdapter adapter = new ReviewAdapter(getApplicationContext(), reviewList);
+                        reviewListView.setAdapter(adapter);
+                        reviewListView.setVisibility(View.GONE);
+                    } else HideReview();
+                } else HideReview();
             }
 
             @Override
@@ -436,5 +501,22 @@ public class DetailsActivity extends AppCompatActivity {
         @Override
         public void onError() {
         }
+    }
+
+    // Hide review label, dividers and review TextView
+    private void HideReview() {
+        mReviewLabelTextView.setVisibility(View.GONE);
+        reviewListView.setVisibility(View.GONE);
+        dividerBeforeReview.setVisibility(View.GONE);
+        dividerAfterReview.setVisibility(View.GONE);
+        dividerBeforeVideoView.setVisibility(View.VISIBLE);
+        showAndHideReviewImageView.setVisibility(View.GONE);
+    }
+
+    // Hide video label, video TextView
+    private void HideVideo() {
+        mVideoLabelTextView.setVisibility(View.GONE);
+        videoListView.setVisibility(View.GONE);
+        showAndHideVideoImageView.setVisibility(View.GONE);
     }
 }

@@ -48,7 +48,7 @@
             android:id="@+id/play_video_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_play_circle_outline_white_48px"
+            android:background="@drawable/ic_play_circle_outline_48px"
             app:layout_constraintBottom_toBottomOf="@+id/backdrop_image_view_details"
             app:layout_constraintLeft_toLeftOf="@+id/backdrop_image_view_details"
             app:layout_constraintRight_toRightOf="@+id/backdrop_image_view_details"
