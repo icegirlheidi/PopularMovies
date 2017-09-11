@@ -1,9 +1,11 @@
 package com.example.android.popularmovies;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -51,6 +54,7 @@ public class DetailsActivity extends AppCompatActivity {
     // Movie's ID
     private int mMovieId;
 
+    // Video key used to create youtube url
     private String mVideoKey;
 
     // A list of keys get from videos
@@ -135,6 +139,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     private String mOriginalTitle;
 
+    // Number of movie deleted from my favorite
+    private int mRowsAffected;
+
+    private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -160,6 +169,9 @@ public class DetailsActivity extends AppCompatActivity {
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(R.string.no_intenet);
         }
+
+        // SharedPreferences used to save boolean value of whether there is movie deleted from my favorite
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
 
@@ -169,9 +181,26 @@ public class DetailsActivity extends AppCompatActivity {
         switch (itemId) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
+                // If there is row deleted, then save deletedFromFavorite as true in shared preference
+                // when pressing HOME button
+                if (mRowsAffected > 0) {
+                    sharedPreferences.edit().putBoolean(
+                            getString(R.string.pref_movie_deleted_from_favorite), true).commit();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (mRowsAffected > 0) {
+            // If there is row deleted, then save deletedFromFavorite as true in shared preference
+            // when pressing BACK button
+            sharedPreferences.edit().putBoolean(
+                    getString(R.string.pref_movie_deleted_from_favorite), true).commit();
+        }
     }
 
     @OnClick(R.id.play_video_button)
@@ -228,9 +257,9 @@ public class DetailsActivity extends AppCompatActivity {
             // then clicking it will delete it from my favorite list
             String selection = FavoriteEntry.COLUMN_MOVIE_ID + "=?";
             String[] selectionArgs = new String[]{String.valueOf(mMovieId)};
-            int rowsAffected = getContentResolver().delete(FavoriteEntry.CONTENT_URI, selection, selectionArgs);
+            mRowsAffected = getContentResolver().delete(FavoriteEntry.CONTENT_URI, selection, selectionArgs);
             // If this movie is removed from my favorite list successfully
-            if (rowsAffected > 0) {
+            if (mRowsAffected > 0) {
                 Toast.makeText(
                         this,
                         mOriginalTitle + " " + getString(R.string.movie_removed_from_favorite),
@@ -255,13 +284,19 @@ public class DetailsActivity extends AppCompatActivity {
                         this,
                         mOriginalTitle + " " + getString(R.string.movie_added_to_favorite_successfully),
                         Toast.LENGTH_LONG).show();
+
+                // If there is movie newly added to my favorite
+                // change mRowsAffected to zero which means there is no movie deleted from my favorite
+                // This works especially when there is movie removed from my favorite
+                // and then added back in DetailsActivity.
+                mRowsAffected = 0;
             }
         }
     }
 
     @OnItemClick(R.id.video_list_view)
-    void onItemClick(int position){
-        if ( mVideoKeyList != null && !mVideoKey.isEmpty() ) {
+    void onItemClick(int position) {
+        if (mVideoKeyList != null && !mVideoKey.isEmpty()) {
             Uri youtubeUri = Uri.parse(Constants.YOUTUBE + mVideoKeyList.get(position));
             Intent intent = new Intent(Intent.ACTION_VIEW, youtubeUri);
             if (intent.resolveActivity(getPackageManager()) != null) {
@@ -438,7 +473,7 @@ public class DetailsActivity extends AppCompatActivity {
         videosCall.enqueue(new Callback<VideoList<Video>>() {
             @Override
             public void onResponse(Call<VideoList<Video>> call, Response<VideoList<Video>> response) {
-                if(response.body() != null) {
+                if (response.body() != null) {
                     List<Video> videosList = response.body().getResults();
                     if (videosList != null && !(videosList.isEmpty())) {
 
@@ -446,7 +481,7 @@ public class DetailsActivity extends AppCompatActivity {
                             mVideoKey = videosList.get(0).getKey();
                         }
                         mVideoKeyList = new ArrayList<>();
-                        for(Video video : videosList){
+                        for (Video video : videosList) {
                             mVideoKeyList.add(video.getKey());
                         }
 
@@ -519,4 +554,6 @@ public class DetailsActivity extends AppCompatActivity {
         videoListView.setVisibility(View.GONE);
         showAndHideVideoImageView.setVisibility(View.GONE);
     }
+
+
 }

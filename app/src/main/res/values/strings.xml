@@ -34,6 +34,8 @@
     <!--Value of my favorite used in settings-->
     <string name="pref_order_by_my_favorite_value" translatable="false">my_favorite</string>
 
+    <string name="pref_movie_deleted_from_favorite" translatable="false">movie_deleted_from_favorite</string>
+
     <!-- Title for empty textview when there is no internet -->
     <string name="no_intenet">No internet connection</string>
 
@@ -55,7 +57,7 @@
     <!--Title of state for RecyclerView in MoviesActivity-->
     <string name="view_state" translatable="false">state</string>
 
-    <string name="line_space_multiplier">1.2</string>
+    <string name="line_space_multiplier" translatable="false">1.2</string>
 
     <string name="review_by">--By </string>
 

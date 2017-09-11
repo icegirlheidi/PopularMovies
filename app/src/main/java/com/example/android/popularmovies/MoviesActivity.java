@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -49,9 +50,15 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
     private FavoriteCursorAdapter mFavoriteCursorAdapter;
 
+    // Boolean value of whether there is movie deleted from my favorite done in details
+    private static boolean MOVIE_IS_DELETED_FROM_FAVORITE = false;
+
+    SharedPreferences sharedPreferences;
+
 
     @BindView(R.id.empty_text_view)
     TextView mEmptyTextView;
+
     @BindView(R.id.loading_progress)
     View mLoadingProgress;
 
@@ -70,7 +77,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         List<Movie> mMoviesList = new ArrayList<>();
         mMoviesAdapter = new MoviesAdapter(this, mMoviesList);
         mRecyclerView.setAdapter(mMoviesAdapter);
-
 
         mMovieService = MovieClient.createService(MovieService.class);
 
@@ -112,16 +118,20 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(
                 getString(R.string.pref_order_by_key),
                 getString(R.string.pref_order_by_popularity_value));
+        // Get the boolean value of MOVIE_IS_DELETED_FROM_FAVORITE
+        // the default value is false
+        MOVIE_IS_DELETED_FROM_FAVORITE = sharedPreferences.getBoolean(
+                getString(R.string.pref_movie_deleted_from_favorite), false);
 
-        // If the setting is order by my favorite, then fetch my favorites movies.
-        // So that if any movie is added to or removed from my favorite list,
-        // The favorite list will reload when user returns from details to movie list
-        if (isOnline()) {
-            if(orderBy.equals("my_favorite")) fetchFavorites();
+        // When coming back from DetailsActivity to MoviesActivity, fetch favorites if there is
+        // movie deleted from my favorite in DetailsActivity
+        // Otherwise return back to the position that is previously scrolled to.
+        if (isOnline() && orderBy.equals(getString(R.string.pref_order_by_my_favorite_value)) && MOVIE_IS_DELETED_FROM_FAVORITE == true) {
+            fetchFavorites();
         }
     }
 
@@ -136,7 +146,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     @Override
@@ -145,6 +154,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         /* Unregister MoviesActivity as an OnPreferenceChangedListener to avoid any memory leaks. */
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -210,7 +220,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
 
-        if (!(orderBy.equals("my_favorite"))) {
+        if (!(orderBy.equals(getString(R.string.pref_order_by_my_favorite_value)))) {
             // Use Retrofit to fetch movies if user selects order by popularity / top rated
             Call<ListResponse<Movie>> moviesCall = mMovieService.getMovies(orderBy);
 
@@ -260,5 +270,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
             mLoadingProgress.setVisibility(View.GONE);
         }
 
+        // Set deletedFromFavorite back to false every time after fetching favorites
+        sharedPreferences.edit().putBoolean(getString(R.string.pref_movie_deleted_from_favorite), false).commit();
     }
 }

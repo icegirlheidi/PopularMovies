@@ -54,19 +54,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                 Intent intent = new Intent(mContext, DetailsActivity.class);
                 intent.putExtra(mContext.getString(R.string.id), movieId);
                 mContext.startActivity(intent);
+
             }
         });
-
-
-/*        ContentValues values = new ContentValues();
-        values.put(MovieEntry.COLUMN_MOVIE_ID, movieId);
-        values.put(MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
-        values.put(MovieEntry.COLUMN_MOVIE_ORIGINAL_TITLE, originalTitle);
-        Uri createdRow = mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, values);
-        if(createdRow != null) {
-            Toast.makeText(mContext, "newly added: " + createdRow, Toast.LENGTH_SHORT).show();
-        }*/
-
     }
 
     @Override
