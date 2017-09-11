@@ -53,7 +53,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     // Boolean value of whether there is movie deleted from my favorite done in details
     private static boolean MOVIE_IS_DELETED_FROM_FAVORITE = false;
 
-    SharedPreferences sharedPreferences;
+//    private static SharedPreferences sharedPreferences;
 
 
     @BindView(R.id.empty_text_view)
@@ -61,6 +61,9 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
     @BindView(R.id.loading_progress)
     View mLoadingProgress;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView movieRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
          * SharedPreference has changed.
          */
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     }
 
@@ -118,6 +122,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(
                 getString(R.string.pref_order_by_key),
@@ -219,6 +224,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     public void fetchMovies() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
+        movieRecyclerView.setVisibility(View.VISIBLE);
 
         if (!(orderBy.equals(getString(R.string.pref_order_by_my_favorite_value)))) {
             // Use Retrofit to fetch movies if user selects order by popularity / top rated
@@ -268,9 +274,11 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(getString(R.string.no_favorite_movies));
             mLoadingProgress.setVisibility(View.GONE);
+            movieRecyclerView.setVisibility(View.INVISIBLE);
         }
 
         // Set deletedFromFavorite back to false every time after fetching favorites
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.edit().putBoolean(getString(R.string.pref_movie_deleted_from_favorite), false).commit();
     }
 }

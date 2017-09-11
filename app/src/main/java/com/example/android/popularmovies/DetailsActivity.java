@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -132,6 +133,9 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.video_list_view)
     NonScrollListView videoListView;
 
+    @BindView(R.id.details_container)
+    LinearLayout detailsContainer;
+
     // MovieService to fetch details in background using Retrofit
     private MovieService mMovieService;
 
@@ -168,6 +172,7 @@ public class DetailsActivity extends AppCompatActivity {
             mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.VISIBLE);
             mEmptyTextView.setText(R.string.no_intenet);
+            detailsContainer.setVisibility(View.INVISIBLE);
         }
 
         // SharedPreferences used to save boolean value of whether there is movie deleted from my favorite
@@ -359,7 +364,7 @@ public class DetailsActivity extends AppCompatActivity {
      */
     public void fetchDetails() {
         Call<Detail> detailsCall = mMovieService.getDetails(String.valueOf(mMovieId));
-
+        detailsContainer.setVisibility(View.VISIBLE);
         detailsCall.enqueue(new Callback<Detail>() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
