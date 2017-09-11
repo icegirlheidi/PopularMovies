@@ -11,4 +11,6 @@
     <color name="divider">#232323</color>
     <color name="dividerLight">#393939</color>
     <color name="iconLight">#eeeeee</color>
+    <color name="favorite">#E91E63</color>
+    <color name="gradientCenterColor">#59000000</color>
 </resources>
