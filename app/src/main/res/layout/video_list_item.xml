@@ -8,21 +8,22 @@
     android:background="@color/colorPrimaryDark">
 
     <ImageView
-        android:id="@+id/trailor_play_button"
+        android:id="@+id/trailer_play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:background="@drawable/ic_play_circle_outline_24px" />
+        android:layout_gravity="start"
+        android:background="@drawable/ic_play_circle_outline_24px"
+        android:contentDescription="@string/content_description_play_video"/>
 
     <TextView
-        android:id="@+id/trailor_text_view"
+        android:id="@+id/trailer_text_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:fontFamily="sans-serif"
         android:lineSpacingMultiplier="1.2"
-        android:layout_centerInParent="true"
         android:textSize="16sp"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:gravity="center_vertical"
         android:textColor="@color/textPrimary"
         tools:text="Trailer 1" />

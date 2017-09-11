@@ -2,15 +2,12 @@ package com.example.android.popularmovies;
 
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.model.Review;
@@ -20,13 +17,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReviewAdapter extends ArrayAdapter<Review> {
-
-    private Context mContext;
+class ReviewAdapter extends ArrayAdapter<Review> {
 
     public ReviewAdapter(@NonNull Context context, List<Review> reviews) {
         super(context, 0, reviews);
-        this.mContext = context;
+        Context mContext = context;
     }
 
     static class ViewHolder{

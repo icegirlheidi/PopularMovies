@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
     private final Context mContext;
-    public List<Movie> mMoviesList;
+    private List<Movie> mMoviesList;
 
     public MoviesAdapter(Context context, List<Movie> moviesList) {
         this.mContext = context;

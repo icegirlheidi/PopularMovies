@@ -23,7 +23,7 @@ public class Review implements Parcelable {
         this.mContent = content;
     }
 
-    protected Review(Parcel in) {
+    private Review(Parcel in) {
         mId = in.readString();
         mAuthor = in.readString();
         mContent = in.readString();
@@ -51,10 +51,6 @@ public class Review implements Parcelable {
 
     public String getAuthor() {
         return mAuthor;
-    }
-
-    public void setAuthor(String author) {
-        this.mAuthor = author;
     }
 
     public String getContent() {

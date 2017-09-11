@@ -1,7 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +13,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,12 +45,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
     private static boolean PREFERENCES_HAVE_BEEN_CHANGED = false;
 
-    private FavoriteCursorAdapter mFavoriteCursorAdapter;
-
-    // Boolean value of whether there is movie deleted from my favorite done in details
-    private static boolean MOVIE_IS_DELETED_FROM_FAVORITE = false;
-
-//    private static SharedPreferences sharedPreferences;
+    //    private static SharedPreferences sharedPreferences;
 
 
     @BindView(R.id.empty_text_view)
@@ -115,7 +107,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
             }
         } else {
             mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(getString(R.string.no_intenet));
+            mEmptyTextView.setText(getString(R.string.no_internet));
         }
     }
 
@@ -123,19 +115,18 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     protected void onResume() {
         super.onResume();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(
                 getString(R.string.pref_order_by_key),
                 getString(R.string.pref_order_by_popularity_value));
         // Get the boolean value of MOVIE_IS_DELETED_FROM_FAVORITE
         // the default value is false
-        MOVIE_IS_DELETED_FROM_FAVORITE = sharedPreferences.getBoolean(
+        boolean MOVIE_IS_DELETED_FROM_FAVORITE = sharedPreferences.getBoolean(
                 getString(R.string.pref_movie_deleted_from_favorite), false);
 
         // When coming back from DetailsActivity to MoviesActivity, fetch favorites if there is
         // movie deleted from my favorite in DetailsActivity
         // Otherwise return back to the position that is previously scrolled to.
-        if (isOnline() && orderBy.equals(getString(R.string.pref_order_by_my_favorite_value)) && MOVIE_IS_DELETED_FROM_FAVORITE == true) {
+        if (isOnline() && orderBy.equals(getString(R.string.pref_order_by_my_favorite_value)) && MOVIE_IS_DELETED_FROM_FAVORITE) {
             fetchFavorites();
         }
     }
@@ -146,11 +137,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         outState.putParcelable(
                 getString(R.string.view_state),
                 mRecyclerView.getLayoutManager().onSaveInstanceState());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -197,7 +183,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
             // Remove the loading progress bar and display no internet connection
             mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(R.string.no_intenet);
+            mEmptyTextView.setText(R.string.no_internet);
             return false;
         }
     }
@@ -221,7 +207,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
     /**
      * Fetch a list of movies using Retrofit open resource
      */
-    public void fetchMovies() {
+    private void fetchMovies() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPreferences.getString(getString(R.string.pref_order_by_key), getString(R.string.pref_order_by_popularity_value));
         movieRecyclerView.setVisibility(View.VISIBLE);
@@ -256,7 +242,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         }
     }
 
-    public void fetchFavorites() {
+    private void fetchFavorites() {
         // Select columns _ID, poster path, original title and movie id.
         String[] projection = {
                 FavoriteEntry._ID,
@@ -266,7 +252,7 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
         };
         Cursor cursor = getContentResolver().query(FavoriteEntry.CONTENT_URI, projection, null, null, null);
         if (cursor.getCount() > 0) {
-            mFavoriteCursorAdapter = new FavoriteCursorAdapter(this, cursor);
+            FavoriteCursorAdapter mFavoriteCursorAdapter = new FavoriteCursorAdapter(this, cursor);
             mRecyclerView.setAdapter(mFavoriteCursorAdapter);
             mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.INVISIBLE);
@@ -279,6 +265,6 @@ public class MoviesActivity extends AppCompatActivity implements SharedPreferenc
 
         // Set deletedFromFavorite back to false every time after fetching favorites
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.edit().putBoolean(getString(R.string.pref_movie_deleted_from_favorite), false).commit();
+        sharedPreferences.edit().putBoolean(getString(R.string.pref_movie_deleted_from_favorite), false).apply();
     }
 }

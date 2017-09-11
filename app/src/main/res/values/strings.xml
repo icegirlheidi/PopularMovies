@@ -37,7 +37,7 @@
     <string name="pref_movie_deleted_from_favorite" translatable="false">movie_deleted_from_favorite</string>
 
     <!-- Title for empty textview when there is no internet -->
-    <string name="no_intenet">No internet connection</string>
+    <string name="no_internet">No internet connection</string>
 
     <!-- Title for empty textview when there is no movie available -->
     <string name="no_movies">No movies found</string>
@@ -46,10 +46,8 @@
     <string name="no_favorite_movies">You haven\'t added any favorite movie</string>
 
     <!-- Title for empty textview when there is no movie details available -->
-    <string name="no_details">No movies details available</string>
 
     <!-- Content description for movie backdrop-->
-    <string name="description_backdrop">Movie backdrop</string>
 
     <!-- Content description for movie poster-->
     <string name="description_poster">Movie poster</string>
@@ -77,4 +75,25 @@
 
     <!-- Text for runtime in DetailsActivity -->
     <string name="runtime_min">min</string>
+
+    <!-- Content description of backdrop -->
+    <string name="content_descritption_backdrop">Movie backdrop</string>
+
+    <!-- Content description of poster -->
+
+    <!-- Content description of play video button -->
+    <string name="content_description_play_video">Play video</string>
+
+    <!-- Content description of add and remove favorite -->
+    <string name="content_description_add_and_remove_favorite">Add and remove favorite</string>
+
+    <!-- Content description of runtime -->
+
+    <!-- Content description of language -->
+
+    <!-- Content description of gradient background -->
+    <string name="content_description_gradient_background">Gradient background above movie backdrop</string>
+
+    <!-- Content description of show and hide reviews -->
+    <string name="content_description_show_and_hide_reviews">Show and hide reviews</string>
 </resources>

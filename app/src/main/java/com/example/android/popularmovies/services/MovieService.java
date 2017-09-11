@@ -8,10 +8,7 @@ import com.example.android.popularmovies.model.ReviewList;
 import com.example.android.popularmovies.model.Video;
 import com.example.android.popularmovies.model.VideoList;
 
-import java.util.List;
-
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 

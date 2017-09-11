@@ -20,12 +20,7 @@ public class Video implements Parcelable {
     @SerializedName("type")
     private String mType;
 
-    public Video(String id, String key) {
-        this.mId = id;
-        this.mKey = key;
-    }
-
-    protected Video(Parcel in) {
+    private Video(Parcel in) {
         mId = in.readString();
         mKey = in.readString();
         mSite = in.readString();
@@ -44,13 +39,6 @@ public class Video implements Parcelable {
         }
     };
 
-    public void setSite(String site) {
-        this.mSite = site;
-    }
-
-    public void setType(String type) {
-        this.mType = type;
-    }
 
     public String getId() {
         return mId;
@@ -64,9 +52,6 @@ public class Video implements Parcelable {
         return mSite;
     }
 
-    public String getType() {
-        return mType;
-    }
 
     @Override
     public int describeContents() {

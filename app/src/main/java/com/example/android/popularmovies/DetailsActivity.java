@@ -1,7 +1,6 @@
 package com.example.android.popularmovies;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +20,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,7 +132,7 @@ public class DetailsActivity extends AppCompatActivity {
     NonScrollListView videoListView;
 
     @BindView(R.id.details_container)
-    LinearLayout detailsContainer;
+    ScrollView detailsContainer;
 
     // MovieService to fetch details in background using Retrofit
     private MovieService mMovieService;
@@ -171,7 +169,7 @@ public class DetailsActivity extends AppCompatActivity {
             // Remove the loading progress bar and display no internet connection
             mLoadingProgress.setVisibility(View.GONE);
             mEmptyTextView.setVisibility(View.VISIBLE);
-            mEmptyTextView.setText(R.string.no_intenet);
+            mEmptyTextView.setText(R.string.no_internet);
             detailsContainer.setVisibility(View.INVISIBLE);
         }
 
@@ -190,7 +188,7 @@ public class DetailsActivity extends AppCompatActivity {
                 // when pressing HOME button
                 if (mRowsAffected > 0) {
                     sharedPreferences.edit().putBoolean(
-                            getString(R.string.pref_movie_deleted_from_favorite), true).commit();
+                            getString(R.string.pref_movie_deleted_from_favorite), true).apply();
                 }
                 return true;
         }
@@ -204,7 +202,7 @@ public class DetailsActivity extends AppCompatActivity {
             // If there is row deleted, then save deletedFromFavorite as true in shared preference
             // when pressing BACK button
             sharedPreferences.edit().putBoolean(
-                    getString(R.string.pref_movie_deleted_from_favorite), true).commit();
+                    getString(R.string.pref_movie_deleted_from_favorite), true).apply();
         }
     }
 
@@ -221,7 +219,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     // Click the up or down arrow to hide or show reviews
     @OnClick(R.id.show_and_hide_reviews)
-    void showAndHideReviews(View view) {
+    void showAndHideReviews() {
         if (hasReview()) {
             reviewListView.setVisibility(View.GONE);
             dividerAfterReview.setVisibility(View.VISIBLE);
@@ -238,7 +236,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.show_and_hide_videos)
-    void showAndHideVideos(View view) {
+    void showAndHideVideos() {
         if (hasVideo()) {
             videoListView.setVisibility(View.GONE);
             dividerAfterVideoView.setVisibility(View.VISIBLE);
@@ -256,7 +254,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     // Click the add and remove favorite button to add and remove favorite movie
     @OnClick(R.id.add_and_remove_favorite_button)
-    void addAndRemoveFavorite(View view) {
+    void addAndRemoveFavorite() {
         if (isFavorite()) {
             // If the clicked movie is already added to my favorite list
             // then clicking it will delete it from my favorite list
@@ -311,40 +309,31 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * @Return whether this movie is added as favorite
+     * Return whether this movie is added as favorite
      */
     private boolean isFavorite() {
         Integer resourceFavorite = (Integer) mAddAndRemoveFavoriteButton.getTag();
         // If the image resource of the button is a full pink heart
         // it means this movie is already added to my favorite list
-        if (resourceFavorite == R.drawable.ic_favorite_48px) {
-            return true;
-        }
-        return false;
+        return resourceFavorite == R.drawable.ic_favorite_48px;
     }
 
     /**
-     * @Return whether reviews are shown or not
+     * Return whether reviews are shown or not
      */
     private boolean hasReview() {
         Integer resourceReview = (Integer) showAndHideReviewImageView.getTag();
 
-        if (resourceReview != null && resourceReview == R.drawable.ic_keyboard_arrow_up_24px) {
-            return true;
-        }
-        return false;
+        return resourceReview != null && resourceReview == R.drawable.ic_keyboard_arrow_up_24px;
     }
 
     /**
-     * @Return whether videos are shown or not
+     * Return whether videos are shown or not
      */
     private boolean hasVideo() {
         Integer resourceVideo = (Integer) showAndHideVideoImageView.getTag();
 
-        if (resourceVideo != null && resourceVideo == R.drawable.ic_keyboard_arrow_up_24px) {
-            return true;
-        }
-        return false;
+        return resourceVideo != null && resourceVideo == R.drawable.ic_keyboard_arrow_up_24px;
     }
 
     /**
@@ -353,16 +342,13 @@ public class DetailsActivity extends AppCompatActivity {
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
     /**
      * Fetch details of a single movie using Retrofit
      */
-    public void fetchDetails() {
+    private void fetchDetails() {
         Call<Detail> detailsCall = mMovieService.getDetails(String.valueOf(mMovieId));
         detailsContainer.setVisibility(View.VISIBLE);
         detailsCall.enqueue(new Callback<Detail>() {
@@ -472,7 +458,7 @@ public class DetailsActivity extends AppCompatActivity {
     /**
      * Fetch videos of a single movie using Retrofit
      */
-    public void fetchVideos() {
+    private void fetchVideos() {
         Call<VideoList<Video>> videosCall = mMovieService.getVideos(String.valueOf(mMovieId));
 
         videosCall.enqueue(new Callback<VideoList<Video>>() {
@@ -504,7 +490,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
-    public void fetchReviews() {
+    private void fetchReviews() {
         Call<ReviewList<Review>> reviewsCall = mMovieService.getReviews(String.valueOf(mMovieId));
         reviewsCall.enqueue(new Callback<ReviewList<Review>>() {
             @Override

@@ -5,7 +5,6 @@ import java.util.List;
 
 public class VideoList<T>{
 
-
     private int id;
 
     private List<Video> results;
@@ -22,8 +21,5 @@ public class VideoList<T>{
         return results;
     }
 
-    public void setResults(List<Video> results) {
-        this.results = results;
-    }
 }
 

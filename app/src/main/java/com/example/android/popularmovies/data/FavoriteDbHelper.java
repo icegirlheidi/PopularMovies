@@ -6,10 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.android.popularmovies.data.FavoriteContract.FavoriteEntry;
-public class FavoriteDbHelper extends SQLiteOpenHelper {
+class FavoriteDbHelper extends SQLiteOpenHelper {
 
     private static final int DATA_VERSION = 1;
-    public static final String DATABASE_NAME = "movies.db";
+    private static final String DATABASE_NAME = "movies.db";
 
     public FavoriteDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATA_VERSION);

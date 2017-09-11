@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 
 public class Movie implements Parcelable {
 
@@ -21,12 +20,7 @@ public class Movie implements Parcelable {
     @SerializedName("vote_average")
     private double mVoteAverage;
 
-    public Movie(String originalTitle, String posterPath) {
-        this.mOriginalTitle = originalTitle;
-        this.mPosterPath = posterPath;
-    }
-
-    protected Movie(Parcel in) {
+    private Movie(Parcel in) {
         mOriginalTitle = in.readString();
         mPosterPath = in.readString();
         mMovieId = in.readInt();
@@ -46,14 +40,6 @@ public class Movie implements Parcelable {
     };
 
 
-    public void setVoteRate(double voteAverage) {
-        this.mVoteAverage = voteAverage;
-    }
-
-    public void setMovieId(int movieId) {
-        this.mMovieId = movieId;
-    }
-
     public String getOriginalTitle() {
         return mOriginalTitle;
     }
@@ -64,10 +50,6 @@ public class Movie implements Parcelable {
 
     public int getMovieId() {
         return mMovieId;
-    }
-
-    public double getVoteAverage() {
-        return mVoteAverage;
     }
 
     @Override

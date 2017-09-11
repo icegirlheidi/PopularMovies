@@ -22,7 +22,7 @@
         android:id="@+id/review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:fontFamily="sans-serif"
         android:textColor="@color/textPrimaryDark"
         tools:text="-- By Eazyryda" />

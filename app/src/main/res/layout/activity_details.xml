@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimaryDark">
 
     <TextView
@@ -22,13 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <LinearLayout
-        android:id="@+id/details_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
         <ScrollView
+            android:id="@+id/details_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fillViewport="true">
@@ -40,7 +36,6 @@
 
 
                 <RelativeLayout
-                    android:id="@+id/backdropContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="true"
@@ -64,7 +59,8 @@
                             android:id="@+id/backdrop_image_view_details"
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
-                            tools:background="@drawable/backdrop_w342" />
+                            tools:background="@drawable/backdrop_w342"
+                            android:contentDescription="@string/content_descritption_backdrop"/>
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -73,7 +69,8 @@
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="200dp"
-                                android:background="@drawable/gradient_background"/>
+                                android:background="@drawable/gradient_background"
+                                android:contentDescription="@string/content_description_gradient_background"/>
                         </FrameLayout>
 
 
@@ -82,17 +79,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:background="@drawable/ic_play_circle_outline_48px" />
+                            android:background="@drawable/ic_play_circle_outline_48px"
+                            android:contentDescription="@string/content_description_play_video"/>
 
                         <ImageView
                             android:id="@+id/add_and_remove_favorite_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
                             android:layout_gravity="end"
                             android:layout_margin="16dp"
-                            android:background="@drawable/ic_favorite_border_48px" />
+                            android:background="@drawable/ic_favorite_border_48px"
+                            android:contentDescription="@string/content_description_add_and_remove_favorite"/>
 
                     </FrameLayout>
                 </RelativeLayout>
@@ -142,6 +139,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/margin_in_details"
+                            android:layout_marginEnd="@dimen/margin_in_details"
                             android:drawableLeft="@drawable/ic_star_18px"
                             android:drawablePadding="@dimen/vote_average_padding"
                             android:drawableStart="@drawable/ic_star_18px"
@@ -164,8 +162,9 @@
                         <TextView
                             android:id="@+id/language_in_details"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
+                            android:layout_height="0dp"
+                            android:layout_marginRight="@dimen/margin_in_details"
+                            android:layout_marginEnd="@dimen/margin_in_details"
                             android:layout_marginTop="32dp"
                             android:layout_weight="1"
                             android:drawableLeft="@drawable/ic_language_24px"
@@ -198,18 +197,21 @@
                     android:layout_marginTop="16dp"
                     android:background="@color/dividerLight" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/reviews_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:paddingLeft="16dp"
+                        android:paddingLeft="@dimen/padding_in_details"
+                        android:paddingStart="@dimen/padding_in_details"
+                        android:paddingRight="@dimen/padding_in_details"
+                        android:paddingEnd="@dimen/padding_in_details"
                         android:text="@string/review_label"
                         android:textAllCaps="true"
                         android:textColor="@color/textLight"
@@ -219,12 +221,12 @@
                         android:id="@+id/show_and_hide_reviews"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
                         android:layout_gravity="end"
-                        android:layout_marginRight="16dp"
-                        android:src="@drawable/ic_keyboard_arrow_down_24px" />
-                </RelativeLayout>
+                        android:layout_marginRight="@dimen/margin_in_details"
+                        android:layout_marginEnd="@dimen/margin_in_details"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_down_24px"
+                        android:contentDescription="@string/content_description_show_and_hide_reviews"/>
+                </LinearLayout>
 
                 <View
                     android:id="@+id/divider_after_review"
@@ -251,18 +253,21 @@
                     android:background="@color/dividerLight"
                     android:visibility="gone"/>
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/videos_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:paddingLeft="16dp"
+                        android:paddingLeft="@dimen/padding_in_details"
+                        android:paddingStart="@dimen/padding_in_details"
+                        android:paddingRight="@dimen/padding_in_details"
+                        android:paddingEnd="@dimen/padding_in_details"
                         android:text="@string/video_label"
                         android:textAllCaps="true"
                         android:textColor="@color/textLight"
@@ -272,13 +277,13 @@
                         android:id="@+id/show_and_hide_videos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
                         android:layout_gravity="end"
-                        android:layout_marginRight="16dp"
-                        android:src="@drawable/ic_keyboard_arrow_down_24px" />
+                        android:layout_marginRight="@dimen/margin_in_details"
+                        android:layout_marginEnd="@dimen/margin_in_details"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_down_24px"
+                        android:contentDescription="@string/content_description_show_and_hide_reviews"/>
 
-                </RelativeLayout>
+                </LinearLayout>
 
                 <View
                     android:id="@+id/divider_after_video"
@@ -309,8 +314,5 @@
 
 
         </ScrollView>
-
-    </LinearLayout>
-
 
 </RelativeLayout>

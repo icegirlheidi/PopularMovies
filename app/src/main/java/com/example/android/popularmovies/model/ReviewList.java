@@ -5,7 +5,6 @@ import java.util.List;
 
 public class ReviewList<T> {
 
-
     private int id;
 
     private int page;
@@ -20,21 +19,8 @@ public class ReviewList<T> {
         this.id = id;
     }
 
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-
     public List<T> getResults() {
         return results;
-    }
-
-    public void setResults(List<T> results) {
-        this.results = results;
     }
 
 }

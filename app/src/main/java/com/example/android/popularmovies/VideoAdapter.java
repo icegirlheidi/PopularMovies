@@ -1,9 +1,6 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -21,19 +18,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class VideoAdapter extends ArrayAdapter<Video> {
-
-    private Context mContext;
+class VideoAdapter extends ArrayAdapter<Video> {
 
     public VideoAdapter(@NonNull Context context, List<Video> videos) {
         super(context, 0, videos);
-        this.mContext = context;
+        Context mContext = context;
     }
 
     static class ViewHolder {
-        @BindView(R.id.trailor_play_button)
+        @BindView(R.id.trailer_play_button)
         ImageView trailerPlayButton;
-        @BindView(R.id.trailor_text_view)
+        @BindView(R.id.trailer_text_view)
         TextView trailerTextView;
 
         public ViewHolder(View view) {
@@ -48,13 +43,10 @@ public class VideoAdapter extends ArrayAdapter<Video> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.video_list_item, parent, false);
         }
 
-        Video video = getItem(position);
         VideoAdapter.ViewHolder holder;
         if (convertView != null) {
             holder = new VideoAdapter.ViewHolder(convertView);
             convertView.setTag(holder);
-        } else {
-            holder = (VideoAdapter.ViewHolder) convertView.getTag();
         }
         holder = new VideoAdapter.ViewHolder(convertView);
         holder.trailerTextView.setText("Trailer" + " " + Integer.toString(position + 1));

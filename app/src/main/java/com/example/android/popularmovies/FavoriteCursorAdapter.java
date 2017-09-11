@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,8 @@ import com.squareup.picasso.Picasso;
 
 public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCursorAdapter.ViewHolder> {
 
-    Context mContext;
-    Cursor mCursor;
+    private final Context mContext;
+    private Cursor mCursor;
 
 
     public FavoriteCursorAdapter(Context context, Cursor cursor) {
@@ -27,8 +26,8 @@ public class FavoriteCursorAdapter extends CursorRecyclerViewAdapter<FavoriteCur
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView mOriginalTitleTextView;
-        public ImageView mPosterImageView;
+        public final TextView mOriginalTitleTextView;
+        public final ImageView mPosterImageView;
 
         public ViewHolder(View view) {
             super(view);

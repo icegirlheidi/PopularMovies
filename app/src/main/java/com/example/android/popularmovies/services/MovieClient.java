@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieClient {
 
-    public static Retrofit.Builder builder = new Retrofit.Builder()
+    private static Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create());
 

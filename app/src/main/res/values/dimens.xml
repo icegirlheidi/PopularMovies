@@ -22,8 +22,10 @@
     <!--Margin for common use in DetailsActivity-->
     <dimen name="margin_in_details">16dp</dimen>
 
+    <!--Padding for common use in DetailsActivity-->
+    <dimen name="padding_in_details">16dp</dimen>
+
     <!--Backdrop height in DetailsActivity-->
-    <dimen name="backdrop_heigh_in_details">180dp</dimen>
 
     <!--Padding for average vote in DetailsActivity-->
     <dimen name="vote_average_padding">5dp</dimen>
@@ -32,11 +34,8 @@
     <dimen name="runtime_padding">5dp</dimen>
 
     <!--Padding for language in DetailsActivity-->
-    <dimen name="language_padding">5dp</dimen>
 
     <!--Height for poster in DetailsActivity-->
-    <dimen name="poster_in_details_height">220dp</dimen>
 
     <!--Width for poster in DetailsActivity-->
-    <dimen name="poster_in_details_width">160dp</dimen>
 </resources>
