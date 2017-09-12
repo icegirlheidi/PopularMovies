@@ -13,13 +13,22 @@ And then following the step in this page https://www.themoviedb.org/faq/api unde
 After getting API key,  add the following attribute to your gradle.properties file using this format API_KEY = "your api key goes here".
 In Android studio, then click on Build -> Rebuild Project. The project will then build and become usable to you.
 
-App Screenshots
------------
+## Dev Details
+
+- API is wrapped with [retrofit 2.3] (http://square.github.io/retrofit/)
+- View and view component onclick are bound with [butterknife] (http://jakewharton.github.io/butterknife/)
+- Pictures are shown with [Picasso] (http://square.github.io/picasso/)
+
+## App Screenshots
 
 <img width="45%" src="screenshots/screen1.png" />
+
 <img width="45%" src="screenshots/screen2.png" />
+
 <img width="45%" src="screenshots/screen3.png" />
+
 <img width="45%" src="screenshots/screen4.png" />
+
 <img width="45%" src="screenshots/screen5.png" />
 
 
