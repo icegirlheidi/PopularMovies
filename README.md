@@ -12,3 +12,14 @@ In order to work with the code, you're encouraged to apply for an API key starti
 And then following the step in this page https://www.themoviedb.org/faq/api under the question "How do I apply for an API key?"
 After getting API key,  add the following attribute to your gradle.properties file using this format API_KEY = "your api key goes here".
 In Android studio, then click on Build -> Rebuild Project. The project will then build and become usable to you.
+
+App Screenshots
+-----------
+
+<img width="45%" src="screenshots/screen1.png" />
+<img width="45%" src="screenshots/screen2.png" />
+<img width="45%" src="screenshots/screen3.png" />
+<img width="45%" src="screenshots/screen4.png" />
+<img width="45%" src="screenshots/screen5.png" />
+
+
